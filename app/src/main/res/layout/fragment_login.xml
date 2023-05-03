@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".activity.LoginFragment">
+
+    <TextView
+        android:id="@+id/Auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/authorization"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+    </TextView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/loginEdit"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/MyHintText"
+        app:layout_constraintEnd_toEndOf="@id/Auth"
+        app:layout_constraintStart_toStartOf="@id/Auth"
+        app:layout_constraintTop_toBottomOf="@id/Auth"
+        app:startIconDrawable="@drawable/ic_login_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/login"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordEdit"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:errorEnabled="true"
+        app:hintTextAppearance="@style/MyHintText"
+        app:layout_constraintEnd_toEndOf="@id/loginEdit"
+        app:layout_constraintStart_toStartOf="@id/loginEdit"
+        app:layout_constraintTop_toBottomOf="@id/loginEdit"
+        app:startIconDrawable="@drawable/ic_lock_24">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/password"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/buttonLogin"
+        android:layout_width="165dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+        android:text="@string/login"
+        app:layout_constraintEnd_toEndOf="@+id/passwordEdit"
+        app:layout_constraintStart_toStartOf="@+id/passwordEdit"
+        app:layout_constraintTop_toBottomOf="@+id/passwordEdit"
+        tools:ignore="MissingConstraints">
+
+    </Button>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/loginGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="Auth, loginEdit,passwordEdit, buttonLogin"
+
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Diplom</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="authorization">Authorization</string>
+    <string name="post_is_empty">Posts is empty</string>
+    <string name="media_list_is_empty">Media list is empty</string>
+    <string name="jobs_is_empty">Jobs is empty</string>
+    <string name="posts">Posts</string>
+    <string name="jobs">Jobs</string>
+    <string name="media">Media</string>
+    <string name="author">Author</string>
+    <string name="registration">Registration</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="password">Password</string>
+</resources>

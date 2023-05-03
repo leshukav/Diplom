@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Диплом</string>
+    <string name="authorization">Авторизация</string>
+    <string name="post_is_empty">Постов нет</string>
+    <string name="media_list_is_empty">медиа лист пуст</string>
+    <string name="jobs_is_empty">Работ нет</string>
+    <string name="posts">Посты</string>
+    <string name="jobs">Работы</string>
+    <string name="media">Медиа</string>
+    <string name="author">Автор</string>
+    <string name="registration">Registration</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="password">Password</string>
+</resources>
