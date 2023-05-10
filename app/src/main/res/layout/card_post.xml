@@ -15,8 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher_round"
-        tools:ignore="MissingConstraints"
-        />
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/author"
@@ -45,9 +44,10 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/menu"
+        style="@style/Widget.AppTheme.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/Widget.AppTheme.Button"
+        android:contentDescription="menu"
         app:icon="@drawable/ic_baseline_more_vert_24"
         app:layout_constraintBottom_toBottomOf="@id/publish"
         app:layout_constraintEnd_toEndOf="parent"
@@ -91,16 +91,15 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        />
+        app:layout_constraintTop_toBottomOf="@id/content" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/cardview_light_background"
-        app:fabSize="mini"
         android:visibility="gone"
+        app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="@+id/videoView"
         app:layout_constraintEnd_toEndOf="@+id/videoView"
         app:layout_constraintStart_toStartOf="@+id/videoView"
@@ -114,12 +113,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
+        android:button="@drawable/ic_play_selector"
         android:checkable="true"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/image"
         app:layout_constraintStart_toStartOf="@id/image"
-        android:button="@drawable/ic_play_selector"
-        />
+        app:layout_constraintTop_toBottomOf="@id/image" />
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -132,7 +130,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fabPlayAudio"
         app:layout_constraintTop_toTopOf="@+id/fabPlayAudio" />
-
 
 
     <androidx.constraintlayout.widget.Barrier
@@ -159,6 +156,7 @@
         android:layout_height="wrap_content"
         android:checkable="false"
         android:paddingStart="8dp"
+        android:contentDescription="share"
         app:icon="@drawable/ic_baseline_share_24"
         app:layout_constraintStart_toEndOf="@id/like"
         app:layout_constraintTop_toBottomOf="@id/contentBarrier"
@@ -170,6 +168,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checkable="false"
+        android:contentDescription="visibility"
         app:icon="@drawable/ic_baseline_visibility_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/contentBarrier" />
@@ -181,12 +180,13 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="like, share, visibility" />
 
- <androidx.cardview.widget.CardView
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content">
-     <ImageView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"/>
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
- </androidx.cardview.widget.CardView>
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

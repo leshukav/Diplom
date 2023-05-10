@@ -81,7 +81,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/teal_100"
         app:layout_constraintEnd_toEndOf="@+id/cardView"
-        app:layout_constraintHeight_max="24dp"
+        app:layout_constraintHeight_max="48dp"
         app:layout_constraintStart_toStartOf="@+id/cardView"
         app:layout_constraintTop_toBottomOf="@+id/cardView">
 
@@ -120,6 +120,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="Add"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
