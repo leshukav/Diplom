@@ -13,6 +13,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
+import ru.netology.diplom.utils.MediaLifecycleObserver
 import ru.netology.diplom.viewmodel.AuthViewModel
 
 @AndroidEntryPoint
@@ -50,11 +51,11 @@ class MainActivity : AppCompatActivity() {
                             true
                         }
                         R.id.register -> {
-
+                            findNavController(R.id.fragmentContainerView).navigate(R.id.registerFragment)
                             true
                         }
                         R.id.logout -> {
-
+                            findNavController(R.id.fragmentContainerView).navigate(R.id.logoutFragment)
                             true
                         }
                         else -> false

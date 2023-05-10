@@ -7,13 +7,15 @@ import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.model.AuthModel
 import ru.netology.diplom.model.AuthModelState
+import ru.netology.diplom.repositry.PostRepository
 import javax.inject.Inject
 
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
+
     private val auth: AppAuth,
-//    private val repository: PostRepository
+    private val repository: PostRepository
 ) : ViewModel() {
     val data: LiveData<AuthModel> = auth.authStateFlow
         .asLiveData(Dispatchers.Default)
@@ -29,7 +31,7 @@ class AuthViewModel @Inject constructor(
     fun authorization(login: String, pass: String) {
         viewModelScope.launch {
             try {
-           //     repository.authorization(login, pass)
+                repository.authorization(login, pass)
                 _state.value = AuthModelState(authorized = true)
             } catch (e: Exception) {
                 _state.value = AuthModelState(errorCode = true)
@@ -38,10 +40,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun registration(name: String, login: String, pass: String) {
+    fun registration(login: String, pass: String, name: String) {
         viewModelScope.launch {
             try {
-          //      repository.registration(name, login, pass)
+                repository.registration(login, pass, name)
                 _state.value = AuthModelState(authorized = true)
             } catch (e: Exception) {
                 _state.value = AuthModelState(errorCode = true)

@@ -58,13 +58,4 @@ class AppAuth @Inject constructor(
     }
 
 
-    private fun getApiService(context: Context): ApiService {
-        val hiltEntryPoint = EntryPointAccessors.fromApplication(
-            context,
-            AppAuthEntryPoint::class.java
-        )
-        return hiltEntryPoint.apiService()
-    }
-
-
 }

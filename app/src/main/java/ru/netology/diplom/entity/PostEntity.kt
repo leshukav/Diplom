@@ -8,7 +8,7 @@ import ru.netology.diplom.dto.Coordinates
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.dto.UserPreview
 
-@Entity(tableName = "post")
+@Entity(tableName = "PostEntity")
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,

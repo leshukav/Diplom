@@ -10,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+import ru.netology.diplom.auth.AppAuth
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -32,11 +33,11 @@ class ApiModule {
     @Provides
     fun provideOkHttp(
         logging: HttpLoggingInterceptor,
-   //     appAuth: AppAuth
+        appAuth: AppAuth
     ): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
-  /*      .addInterceptor { chain ->
-            appAuth.authStateFlow.value?.token?.let { token ->
+        .addInterceptor { chain ->
+            appAuth.authStateFlow.value.token?.let { token ->
                 val newRequest = chain.request().newBuilder()
                     .addHeader("Authorization", token)
                     .build()
@@ -44,8 +45,6 @@ class ApiModule {
             } ?: chain.request()
             chain.proceed(chain.request())
         }
-
-   */
         .build()
 
     @Singleton

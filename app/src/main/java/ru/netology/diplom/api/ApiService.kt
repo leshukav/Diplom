@@ -2,16 +2,9 @@ package ru.netology.diplom.api
 
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.Field
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 import ru.netology.diplom.dto.*
+import ru.netology.diplom.model.AuthModel
 
 interface ApiService {
     // Event
@@ -141,18 +134,20 @@ interface ApiService {
     @GET("/api/users/{user_id}/")
     suspend fun getUserById(@Path("user_id") user_id: Long): Response<User>
 
+    @FormUrlEncoded
     @POST("/api/users/authentication/")
     suspend fun authUser(
         @Field("login") login: String,
         @Field("password") password: String
-    ): Response<Token> // TODO  возврат объекта AuthModel
+    ): Response<AuthModel>
 
+    @FormUrlEncoded
     @POST("/api/users/registration/")
     suspend fun registrationUser(
         @Field("login") login: String,
         @Field("password") password: String,
         @Field("name") name: String
-    ): Response<Token> // TODO  возврат объекта AuthModel
+    ): Response<AuthModel>
 
     // Wall
     @GET("/api/{author_id}/wall/")

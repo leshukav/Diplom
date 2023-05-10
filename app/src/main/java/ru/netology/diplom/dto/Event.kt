@@ -22,8 +22,8 @@ data class Event(
 )
 
 data class Coordinates(
-    val lat: String,
-    val longs: String,
+    val lat: String? = null,
+    val longs: String? = null,
 )
 
 data class Attachment(
@@ -41,7 +41,7 @@ enum class TypeAttachment {
 
 data class UserPreview(
     override val idUser: Long,
-    val name: String,
+    val name: String? = null,
     val avatar: String? = null,
 ): Users
 

@@ -14,4 +14,17 @@
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="Exit">Are you sure to get out</string>
+    <string name="Wait_authorization">Wait authorization</string>
+    <string name="Login_is_Null">Login is Null</string>
+    <string name="Login_not_found">Login not found</string>
+    <string name="Password_not_correct">Password not correct</string>
+    <string name="Login_Name_is_not_empty">Login Name is not empty</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_remove">Remove</string>
+    <string name="error">Error</string>
+    <string name="retry_loading">Retry loading</string>
 </resources>

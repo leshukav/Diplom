@@ -77,12 +77,12 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/content"
+        android:layout_height="200dp"
         android:visibility="gone"
-        tools:srcCompat='@tools:sample/avatars' />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content" />
 
     <VideoView
         android:id="@+id/videoView"
@@ -116,8 +116,8 @@
         android:layout_marginTop="4dp"
         android:checkable="true"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/content"
-        app:layout_constraintStart_toStartOf="@id/content"
+        app:layout_constraintTop_toBottomOf="@id/image"
+        app:layout_constraintStart_toStartOf="@id/image"
         android:button="@drawable/ic_play_selector"
         />
 
@@ -140,7 +140,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="content, image,videoView, fabPlayAudio" />
+        app:constraint_referenced_ids="content, image,videoView, fabPlayAudio, seekBar" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/like"
