@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +23,7 @@ import ru.netology.diplom.dto.Post
 import ru.netology.diplom.utils.MediaLifecycleObserver
 import ru.netology.diplom.viewmodel.PostViewModel
 
-@Suppress("DEPRECATION")
+
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class MainFragment : Fragment() {
