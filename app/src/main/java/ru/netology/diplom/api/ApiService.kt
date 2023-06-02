@@ -1,6 +1,7 @@
 package ru.netology.diplom.api
 
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 import ru.netology.diplom.dto.*
@@ -95,7 +96,7 @@ interface ApiService {
     suspend fun getAllPosts(): Response<List<Post>>
 
     @POST("/api/posts/")
-    suspend fun savePost(@Body postCreate: PostCreate): Response<PostCreate>
+    suspend fun savePost(@Body post: PostCreate): Response<Post>
 
     @GET("/api/posts/latest/")
     suspend fun getLatestPosts(@Query("count") count: Int): Response<List<Post>>
@@ -147,6 +148,15 @@ interface ApiService {
         @Field("login") login: String,
         @Field("password") password: String,
         @Field("name") name: String
+    ): Response<AuthModel>
+
+    @Multipart
+    @POST("/api/users/registration/")
+    suspend fun registerWithAvatar(
+        @Part("login") login: RequestBody,
+        @Part("pass") pass: RequestBody,
+        @Part("name") name: RequestBody,
+        @Part media: MultipartBody.Part,
     ): Response<AuthModel>
 
     // Wall

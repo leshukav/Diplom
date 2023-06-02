@@ -50,10 +50,13 @@ class AppAuth @Inject constructor(
             putString(TOKEN_KEY, token)
         }
     }
+    @Synchronized
+    fun getAuthId() = authStateFlow.value.id
+
 
     @Synchronized
     fun removeAuth() {
-        _authStateFlow.value = AuthModel(0L,null)
+        _authStateFlow.value = AuthModel(0L, null)
         prefs.edit { clear() }
     }
 

@@ -3,49 +3,55 @@ package ru.netology.diplom.activity
 import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import ru.netology.diplom.R
 import ru.netology.diplom.adapter.Listener
 import ru.netology.diplom.adapter.PostAdapter
 import ru.netology.diplom.databinding.FragmentMainBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.utils.MediaLifecycleObserver
+import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
 
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), MenuProvider {
     lateinit var binding: FragmentMainBinding
     lateinit var adapter: PostAdapter
     private val observer = MediaLifecycleObserver()
-
+    private var playPostId = -1L
     private val viewModelPost: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMainBinding.inflate(inflater)
-        binding.button.setOnClickListener {
-            findNavController().navigate(R.id.authorFragment2)
-
-        }
         lifecycle.addObserver(observer)
 
         adapter = PostAdapter(object : Listener {
             override fun onClik(post: Post) {
-                println(post)
+                observer.mediaPlayer?.release()
+                observer.mediaPlayer = null
+                findNavController().navigate(R.id.authorFragment2)
             }
 
             override fun onRemove(post: Post) {
@@ -65,7 +71,8 @@ class MainFragment : Fragment() {
             }
 
             override fun onPlayMusic(post: Post, seekBar: SeekBar) {
-                if (observer.isPaused() == false) {
+                if (!observer.isPaused() || post.id != playPostId) {
+                    playPostId = post.id
                     val url = post.attachment?.url
                     observer.apply {
                         mediaPlayer?.reset()
@@ -133,8 +140,35 @@ class MainFragment : Fragment() {
             //    viewModelPost.refreshPosts()
         }
 
-        // Inflate the layout for this fragment
+
         return binding.root
     }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu_auth, menu)
+        menu.setGroupVisible(R.id.unauthorization, !authViewModel.authorized)
+        menu.setGroupVisible(R.id.authorization, authViewModel.authorized)
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
+        when (menuItem.itemId) {
+            R.id.login -> {
+                findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
+                true
+            }
+            R.id.register -> {
+                findNavController().navigate(R.id.registerFragment)
+                true
+            }
+            R.id.logout -> {
+                findNavController().navigate(R.id.logoutFragment)
+                true
+            }
+            R.id.addPost -> {
+                findNavController().navigate(R.id.newPostFragment)
+                true
+            }
+            else -> false
+        }
 
 }

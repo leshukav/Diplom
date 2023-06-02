@@ -3,15 +3,21 @@ package ru.netology.diplom.repositry
 import android.util.Log
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dao.PostDao
 import ru.netology.diplom.dao.PostRemoteKeyDao
 import ru.netology.diplom.db.AppDb
+import ru.netology.diplom.dto.*
 import ru.netology.diplom.entity.PostEntity
 import ru.netology.diplom.error.ApiError
 import ru.netology.diplom.error.NetworkError
+import ru.netology.diplom.model.MediaModel
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -60,7 +66,35 @@ class PostRepositoryImpl @Inject constructor(
             }
             val field = response.body() ?: throw HttpException(response)
             field.token?.let { appAuth.setAuth(field.id, it) }
-            Log.d("MyTag", "Token -> ${field.token}")
+
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun registrationWithAvatar(login: String, pass: String, name: String, media: MediaModel) {
+        try {
+            val part = MultipartBody.Part.createFormData(
+                "file", media.file.name, media.file.asRequestBody()
+            )
+
+            val response = apiService.registerWithAvatar(
+                login.toRequestBody("text/plain".toMediaType()),
+                pass.toRequestBody("text/plain".toMediaType()),
+                name.toRequestBody("text/plain".toMediaType()),
+                part
+            )
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            val field = response.body() ?: throw HttpException(response)
+            field.token?.let { appAuth.setAuth(field.id, it) }
+  //          _signUpApp.postValue(body)
+   //         _stateSignUp.value = SignUpModelState()
+  //          clearAvatar()
+
         } catch (e: IOException) {
             throw NetworkError
         }
@@ -105,5 +139,53 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun cancelLike(id: Long) {
         postDao.likeById(id)
+    }
+
+    override suspend fun save(post: PostCreate) {
+        try {
+            val postResponse = apiService.savePost(post)
+            if (!postResponse.isSuccessful) {
+                throw ApiError(postResponse.code(), postResponse.message())
+            }
+            val body = postResponse.body() ?: throw HttpException(postResponse)
+
+            postDao.insert(PostEntity.fromDto(body))
+
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun saveWithAttachment(post: PostCreate, mediaModel: MediaModel) {
+        try {
+            val media = upload(mediaModel)
+            val posts = post.copy(attachment = Attachment(media.url, type = TypeAttachment.IMAGE))
+            val response = apiService.savePost(posts)
+
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+            val body = response.body() ?: throw ApiError(response.code(), response.message())
+            postDao.insert(PostEntity.fromDto(body))
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun upload(upload: MediaModel): Media {
+        try {
+            val media = MultipartBody.Part.createFormData(
+                "file", upload.file?.name, upload.file?.asRequestBody() ?: throw NetworkError
+            )
+
+            val response = apiService.uploadMedia(media)
+            if (!response.isSuccessful) {
+                throw ApiError(response.code(), response.message())
+            }
+
+            return response.body() ?: throw ApiError(response.code(), response.message())
+        } catch (e: IOException) {
+            throw NetworkError
+        }
     }
 }

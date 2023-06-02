@@ -6,19 +6,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.RegisterFragment">
 
-    <TextView
-        android:id="@+id/registration"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/preview_avatar_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="@string/registration"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints">
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/nameEdit">
 
-    </TextView>
+        <ImageView
+            android:id="@+id/preview_avatar"
+            android:layout_width="192dp"
+            android:layout_height="192dp"
+            android:layout_gravity="center"
+            android:contentDescription="choose"
+            android:src="@drawable/person_outline_24" />
+
+        <Button
+            android:id="@+id/clearBut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal|bottom"
+            android:text="clear" />
+    </FrameLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/nameEdit"
@@ -26,10 +36,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         app:errorEnabled="true"
+        android:layout_marginTop="16dp"
         app:hintTextAppearance="@style/MyHintText"
-        app:layout_constraintEnd_toEndOf="@id/registration"
-        app:layout_constraintStart_toStartOf="@id/registration"
-        app:layout_constraintTop_toBottomOf="@id/registration"
+        app:layout_constraintEnd_toEndOf="@id/preview_avatar_container"
+        app:layout_constraintStart_toStartOf="@id/preview_avatar_container"
+        app:layout_constraintTop_toBottomOf="@id/preview_avatar_container"
         app:startIconDrawable="@drawable/ic_login_24">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -115,13 +126,6 @@
         tools:ignore="MissingConstraints">
 
     </Button>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/registrGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="registration,nameEdit,loginEditRegistr,passwordEditRegistr,passCheckEditRegistr,registrButton" />
 
     <ProgressBar
         android:id="@+id/loading"

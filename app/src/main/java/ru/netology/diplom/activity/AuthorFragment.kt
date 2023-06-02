@@ -16,7 +16,7 @@ class AuthorFragment : Fragment() {
     lateinit var binding: FragmentAuthorBinding
 
     private val fragmentList = listOf(
-        PostFragment(),
+        NewPostFragment(),
         JobFragment(),
         MediaFragment()
     )

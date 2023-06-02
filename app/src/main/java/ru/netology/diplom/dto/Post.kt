@@ -3,6 +3,7 @@ package ru.netology.diplom.dto
 data class Post(
     val id: Long,
     val authorId: Long,
+    val author: String,
     val authorAvatar: String? = null,
     val authorJob: String? = null,
     val content: String,

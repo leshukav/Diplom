@@ -45,7 +45,7 @@ class LoginFragment : Fragment() {
         }
 
         authViewModel.data.observe(viewLifecycleOwner) {
-            if (authViewModel.authorized ) {
+            if (authViewModel.authorized) {
                 findNavController().navigateUp()   //navigate(R.id.fragment_main)
             }
         }

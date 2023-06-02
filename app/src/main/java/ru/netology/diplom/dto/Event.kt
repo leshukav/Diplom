@@ -22,8 +22,8 @@ data class Event(
 )
 
 data class Coordinates(
-    val lat: String? = null,
-    val longs: String? = null,
+    var lat: String? = null,
+    var long: String? = null,
 )
 
 data class Attachment(

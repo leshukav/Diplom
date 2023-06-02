@@ -88,7 +88,6 @@
         android:id="@+id/videoView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/content" />
@@ -98,13 +97,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/cardview_light_background"
-        android:visibility="gone"
         app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="@+id/videoView"
         app:layout_constraintEnd_toEndOf="@+id/videoView"
         app:layout_constraintStart_toStartOf="@+id/videoView"
         app:layout_constraintTop_toTopOf="@+id/videoView"
         app:srcCompat="@drawable/ic_play_48" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/videoGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="fabPlay, videoView"
+        />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/fabPlayAudio"
@@ -115,7 +121,6 @@
         android:layout_marginTop="4dp"
         android:button="@drawable/ic_play_selector"
         android:checkable="true"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="@id/image"
         app:layout_constraintTop_toBottomOf="@id/image" />
 
@@ -125,12 +130,18 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fabPlayAudio"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/fabPlayAudio"
         app:layout_constraintTop_toTopOf="@+id/fabPlayAudio" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/audioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="fabPlayAudio, seekBar"
+        />
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/contentBarrier"
@@ -180,13 +191,4 @@
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="like, share, visibility" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

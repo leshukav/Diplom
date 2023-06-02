@@ -3,6 +3,7 @@ package ru.netology.diplom.entity
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import ru.netology.diplom.dto.Attachment
 import ru.netology.diplom.dto.Coordinates
 import ru.netology.diplom.dto.Post
@@ -13,6 +14,7 @@ data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val authorId: Long,
+    val author: String,
     val authorAvatar: String? = null,
     val authorJob: String? = null,
     val content: String,
@@ -33,6 +35,7 @@ data class PostEntity(
     fun toDto() = Post(
         id,
         authorId,
+        author,
         authorAvatar,
         authorJob,
         content,
@@ -53,6 +56,7 @@ data class PostEntity(
             PostEntity(
                 dto.id,
                 dto.authorId,
+                dto.author,
                 dto.authorAvatar,
                 dto.authorJob,
                 dto.content,

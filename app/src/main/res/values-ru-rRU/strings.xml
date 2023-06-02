@@ -25,4 +25,17 @@
     <string name="menu_edit">Edit</string>
     <string name="menu_remove">Remove</string>
     <string name="error">Error</string>
+    <string name="retry_loading">Retry loading</string>
+    <string name="choose">Выбор ресурса для аватара</string>
+    <string name="gallery">Галерея</string>
+    <string name="photo">Фото</string>
+    <string name="remove">Remove</string>
+    <string name="description_photo">Фото</string>
+    <string name="description_select_photo">Выбрать фото</string>
+    <string name="description_take_photo">Взять фото</string>
+    <string name="post">Posts</string>
+    <string name="addPost">Add post</string>
+    <string name="music">Music</string>
+    <string name="gallary">Gallary</string>
+    <string name="save">Save</string>
 </resources>

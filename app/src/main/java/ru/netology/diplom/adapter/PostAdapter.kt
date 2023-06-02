@@ -60,17 +60,14 @@ class PostViewHolder(
             }
             if (post.attachment == null) {
                 image.visibility = View.GONE
-                fabPlayAudio.visibility = View.GONE
-                seekBar.visibility = View.GONE
-                videoView.visibility = View.GONE
-                fabPlay.visibility = View.GONE
+                videoGroup.visibility = View.GONE
+                audioGroup.visibility = View.GONE
             } else {
                 when (post.attachment?.type) {
                     TypeAttachment.IMAGE -> {
+                        videoGroup.visibility = View.GONE
+                        audioGroup.visibility = View.GONE
                         image.visibility = View.VISIBLE
-                        fabPlayAudio.visibility = View.GONE
-                        seekBar.visibility = View.GONE
-                        fabPlay.visibility = View.GONE
                         val url = post.attachment?.url
                         Glide.with(image)
                             .load(url)
@@ -78,23 +75,24 @@ class PostViewHolder(
                             .into(image)
                     }
                     TypeAttachment.VIDEO -> {
-                        videoView.visibility = View.VISIBLE
-                        fabPlay.visibility = View.VISIBLE
+                        videoGroup.visibility = View.VISIBLE
                     }
                     TypeAttachment.AUDIO -> {
                         image.visibility = View.VISIBLE
+                        audioGroup.visibility = View.VISIBLE
                         image.setImageResource(R.drawable.music_logo)
-                        fabPlayAudio.visibility = View.VISIBLE
-                        seekBar.visibility = View.VISIBLE
                         seekBar.max = 0
                     }
                     else -> {
-
+                        image.visibility = View.GONE
+                        videoGroup.visibility = View.GONE
+                        audioGroup.visibility = View.GONE
                     }
                 }
 
 
             }
+            author.text = post.author
             publish.text = post.published
             content.text = post.content
             like.isChecked = post.likeByMe
@@ -113,7 +111,6 @@ class PostViewHolder(
                         Uri.parse(post.attachment?.url)
                     )
                     setOnPreparedListener {
-                        seekTo(10)
                         start()
                     }
                     setOnCompletionListener {

@@ -1,5 +1,6 @@
 package ru.netology.diplom.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -7,7 +8,9 @@ import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.model.AuthModel
 import ru.netology.diplom.model.AuthModelState
+import ru.netology.diplom.model.MediaModel
 import ru.netology.diplom.repositry.PostRepository
+import java.io.File
 import javax.inject.Inject
 
 
@@ -27,6 +30,10 @@ class AuthViewModel @Inject constructor(
     val state: LiveData<AuthModelState>
         get() = _state
 
+    private val _mediaAvatar = MutableLiveData<MediaModel?>(null)
+    val mediaAvatar: LiveData<MediaModel?>
+        get() = _mediaAvatar
+
 
     fun authorization(login: String, pass: String) {
         viewModelScope.launch {
@@ -43,11 +50,23 @@ class AuthViewModel @Inject constructor(
     fun registration(login: String, pass: String, name: String) {
         viewModelScope.launch {
             try {
-                repository.registration(login, pass, name)
+                when (val media = mediaAvatar.value) {
+                    null -> repository.registration(login, pass, name)
+                    else -> repository.registrationWithAvatar(login, pass, name, media)
+                }
+            //    repository.registration(login, pass, name)
                 _state.value = AuthModelState(authorized = true)
             } catch (e: Exception) {
                 _state.value = AuthModelState(errorCode = true)
             }
         }
+    }
+
+    fun changeAvatar(file: File, uri: Uri) {
+        _mediaAvatar.value = MediaModel(uri, file)
+    }
+
+    fun clearAvatar() {
+        _mediaAvatar.value = null
     }
 }
