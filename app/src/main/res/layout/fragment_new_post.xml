@@ -28,7 +28,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:inputType="textMultiLine"
-                android:padding="@dimen/common_spacing" />
+                android:padding="@dimen/common_spacing"
+                android:contentDescription="@string/enter_text"/>
 
             <FrameLayout
                 android:id="@+id/photoContainer"
@@ -42,6 +43,23 @@
                     android:layout_gravity="center_horizontal"
                     android:contentDescription="@string/description_photo"
                     tools:srcCompat="@tools:sample/avatars[5]" />
+                <VideoView
+                    android:id="@+id/videoPreview"
+                    android:layout_margin="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabPlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/cardview_light_background"
+                    app:fabSize="mini"
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_play_48" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/clear"

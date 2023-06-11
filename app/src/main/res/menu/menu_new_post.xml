@@ -21,8 +21,14 @@
         android:title="@string/gallary"
         app:showAsAction="always" />
     <item
-        android:id="@+id/media"
+        android:id="@+id/audio"
         android:icon="@drawable/ic_music_note_24"
+        android:orderInCategory="3"
+        android:title="@string/media"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/video"
+        android:icon="@drawable/video_play_24"
         android:orderInCategory="3"
         android:title="@string/media"
         app:showAsAction="always" />

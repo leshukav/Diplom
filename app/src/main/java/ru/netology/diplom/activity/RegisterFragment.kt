@@ -19,6 +19,7 @@ import ru.netology.diplom.utils.AndroidUtils
 import ru.netology.diplom.viewmodel.AuthViewModel
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ru.netology.diplom.dto.TypeAttachment
 
 
 @AndroidEntryPoint
@@ -45,7 +46,7 @@ class RegisterFragment : Fragment() {
                     }
                     else -> {
                         val uri = it.data?.data ?: return@registerForActivityResult
-                        authViewModel.changeAvatar(uri.toFile(), uri)
+                        authViewModel.changeAvatar(uri.toFile(), uri, TypeAttachment.IMAGE)
                     }
                 }
             }

@@ -25,6 +25,8 @@ interface PostRepository {
 
     suspend fun cancelLike(id: Long)
 
+    suspend fun removePostById(id: Long)
+
     suspend fun save(post: PostCreate)
 
     suspend fun saveWithAttachment(post: PostCreate, media: MediaModel)

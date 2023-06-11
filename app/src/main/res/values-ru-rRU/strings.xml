@@ -38,4 +38,7 @@
     <string name="music">Music</string>
     <string name="gallary">Gallary</string>
     <string name="save">Save</string>
+    <string name="enter_text">Enter text</string>
+    <string name="share_content">Share content</string>
+    <string name="image">Image</string>
 </resources>

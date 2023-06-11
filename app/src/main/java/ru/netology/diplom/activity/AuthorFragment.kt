@@ -1,11 +1,8 @@
 package ru.netology.diplom.activity
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import ru.netology.diplom.adapter.ViewPagerAdapter
@@ -16,7 +13,7 @@ class AuthorFragment : Fragment() {
     lateinit var binding: FragmentAuthorBinding
 
     private val fragmentList = listOf(
-        NewPostFragment(),
+        Fragment(),
         JobFragment(),
         MediaFragment()
     )
@@ -26,12 +23,6 @@ class AuthorFragment : Fragment() {
         "MEDIA",
     )
 
-    override fun onStart() {
-        if ((activity is AppCompatActivity))  {
-            (activity as AppCompatActivity).supportActionBar?.title = "Author"
-        }
-        super.onStart()
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +32,7 @@ class AuthorFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    //    super.onViewCreated(view, savedInstanceState)
         init()
     }
 
@@ -52,4 +43,5 @@ class AuthorFragment : Fragment() {
             tab.text = tabList[pos]
         }.attach()
     }
+
 }

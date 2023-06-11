@@ -1,5 +1,6 @@
 package ru.netology.diplom.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
@@ -12,7 +13,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -24,11 +27,14 @@ import ru.netology.diplom.dto.Post
 import ru.netology.diplom.utils.MediaLifecycleObserver
 import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
-
+import ru.netology.diplom.utils.StringArgs
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class MainFragment : Fragment(), MenuProvider {
+    companion object{
+        var Bundle.textArg by StringArgs
+    }
     lateinit var binding: FragmentMainBinding
     lateinit var adapter: PostAdapter
     private val observer = MediaLifecycleObserver()
@@ -55,11 +61,7 @@ class MainFragment : Fragment(), MenuProvider {
             }
 
             override fun onRemove(post: Post) {
-
-            }
-
-            override fun onEdit(post: Post) {
-
+                viewModelPost.removePostById(post.id)
             }
 
             override fun onLike(post: Post) {
@@ -91,10 +93,40 @@ class MainFragment : Fragment(), MenuProvider {
                 observer.onPause()
             }
 
+            override fun onShare(post: Post) {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, post.content)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(intent, getString(R.string.share_content))
+                startActivity(shareIntent)
+            }
+
+            override fun onImage(post: Post) {
+               val url = post.attachment?.url
+                findNavController().navigate(R.id.action_mainFragment_to_imageFragment3, Bundle().apply {
+                    textArg = url
+                })
+            }
+
         })
+
+        val dividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
+        dividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_drawable))
+        binding.listPosts.addItemDecoration(dividerItemDecoration)
+
+
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                if (positionStart == 0) {
+                    binding.listPosts.smoothScrollToPosition(0)
+                }
+            }
+        })
+
         binding.listPosts.layoutManager = LinearLayoutManager(requireContext())
         binding.listPosts.adapter = adapter
-        //  viewModelPost.loadPosts()
         viewModelPost.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
 

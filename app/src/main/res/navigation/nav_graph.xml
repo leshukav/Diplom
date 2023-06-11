@@ -25,15 +25,21 @@
         <action
             android:id="@+id/action_mainFragment_to_newPostFragment"
             app:destination="@id/newPostFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_imageFragment3"
+            app:destination="@id/imageFragment3" />
     </fragment>
     <fragment
         android:id="@+id/authorFragment2"
         android:name="ru.netology.diplom.activity.AuthorFragment"
-        android:label="fragment_author"
+        android:label="@string/author"
         tools:layout="@layout/fragment_author" >
         <action
             android:id="@+id/action_authorFragment2_to_logoutFragment"
             app:destination="@id/logoutFragment" />
+        <action
+            android:id="@+id/action_authorFragment2_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -72,6 +78,15 @@
         tools:layout="@layout/fragment_new_post" >
         <action
             android:id="@+id/action_newPostFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/imageFragment3"
+        android:name="ru.netology.diplom.activity.ImageFragment"
+        android:label="@string/image"
+        tools:layout="@layout/fragment_image" >
+        <action
+            android:id="@+id/action_imageFragment3_to_mainFragment"
             app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

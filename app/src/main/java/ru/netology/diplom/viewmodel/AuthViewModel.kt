@@ -6,6 +6,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
+import ru.netology.diplom.dto.Attachment
+import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.model.AuthModel
 import ru.netology.diplom.model.AuthModelState
 import ru.netology.diplom.model.MediaModel
@@ -62,8 +64,8 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun changeAvatar(file: File, uri: Uri) {
-        _mediaAvatar.value = MediaModel(uri, file)
+    fun changeAvatar(file: File, uri: Uri, type: TypeAttachment) {
+        _mediaAvatar.value = MediaModel(uri, file, type)
     }
 
     fun clearAvatar() {

@@ -23,12 +23,12 @@ import ru.netology.diplom.utils.Count
 interface Listener {
     fun onClik(post: Post)
     fun onRemove(post: Post)
-    fun onEdit(post: Post)
     fun onLike(post: Post)
     fun onPlayMusic(post: Post, seekBar: SeekBar)
     fun onPlayVideo(post: Post)
     fun onPause()
-
+    fun onShare(post: Post)
+    fun onImage(post: Post)
 }
 
 class PostAdapter(
@@ -43,7 +43,6 @@ class PostAdapter(
         val post = getItem(position) ?: return
         holder.bind(post)
     }
-
 }
 
 class PostViewHolder(
@@ -75,7 +74,12 @@ class PostViewHolder(
                             .into(image)
                     }
                     TypeAttachment.VIDEO -> {
+                        image.visibility = View.GONE
                         videoGroup.visibility = View.VISIBLE
+                        videoView.setVideoURI(
+                            Uri.parse(post.attachment?.url)
+                        )
+                        videoView.seekTo(10)
                     }
                     TypeAttachment.AUDIO -> {
                         image.visibility = View.VISIBLE
@@ -90,18 +94,13 @@ class PostViewHolder(
                     }
                 }
 
-
             }
             author.text = post.author
             publish.text = post.published
             content.text = post.content
             like.isChecked = post.likeByMe
-
             like.text =
                 if (like.isChecked) Count.logic(post.likeOwnerIds.size + 1) else (Count.logic(post.likeOwnerIds.size))
-            //    share.text = DisplayCount.logic(990)
-            //   visibility.text = DisplayCount.logic(1)
-
 
             fabPlay.setOnClickListener {
                 fabPlay.visibility = View.GONE
@@ -135,6 +134,14 @@ class PostViewHolder(
                 onListener.onLike(post)
             }
 
+            share.setOnClickListener {
+                onListener.onShare(post)
+            }
+
+            image.setOnClickListener {
+                onListener.onImage(post)
+            }
+
             menu.isVisible = post.ownedByMe
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
@@ -145,10 +152,7 @@ class PostViewHolder(
                                 onListener.onRemove(post)
                                 true
                             }
-                            R.id.edit -> {
-                                onListener.onEdit(post)
-                                true
-                            }
+
                             else -> false
                         }
 

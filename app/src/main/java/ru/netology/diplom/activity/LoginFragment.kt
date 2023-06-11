@@ -64,8 +64,6 @@ class LoginFragment : Fragment() {
                 Toast.makeText(context, R.string.Login_not_found, Toast.LENGTH_LONG).show()
             }
         }
-
-
         return binding.root
     }
 

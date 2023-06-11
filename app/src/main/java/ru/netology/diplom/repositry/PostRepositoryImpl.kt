@@ -1,6 +1,5 @@
 package ru.netology.diplom.repositry
 
-import android.util.Log
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
 import okhttp3.MediaType.Companion.toMediaType
@@ -141,6 +140,16 @@ class PostRepositoryImpl @Inject constructor(
         postDao.likeById(id)
     }
 
+    override suspend fun removePostById(id: Long) {
+        try {
+            val postResponce = apiService.deletePostById(id)
+            if (!postResponce.isSuccessful) {
+                throw  ApiError(postResponce.code(), postResponce.message())
+            }
+            postDao.removeById(id)
+        } catch (_: Exception) {}
+    }
+
     override suspend fun save(post: PostCreate) {
         try {
             val postResponse = apiService.savePost(post)
@@ -159,7 +168,7 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun saveWithAttachment(post: PostCreate, mediaModel: MediaModel) {
         try {
             val media = upload(mediaModel)
-            val posts = post.copy(attachment = Attachment(media.url, type = TypeAttachment.IMAGE))
+            val posts = post.copy(attachment = Attachment(media.url, type = mediaModel.type)) //TypeAttachment.IMAGE))
             val response = apiService.savePost(posts)
 
             if (!response.isSuccessful) {
@@ -171,7 +180,6 @@ class PostRepositoryImpl @Inject constructor(
             throw NetworkError
         }
     }
-
     override suspend fun upload(upload: MediaModel): Media {
         try {
             val media = MultipartBody.Part.createFormData(
