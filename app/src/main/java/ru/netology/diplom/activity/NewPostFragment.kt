@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.media.session.MediaControllerCompat.setMediaController
 import android.view.*
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
@@ -53,7 +52,7 @@ class NewPostFragment : Fragment(), MenuProvider {
         binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
         binding.clear.setOnClickListener {
-            viewModelPost.clearPhoto()
+            viewModelPost.clearMedia()
         }
 
         viewModelPost.media.observe(viewLifecycleOwner) { media ->
@@ -72,7 +71,7 @@ class NewPostFragment : Fragment(), MenuProvider {
                 }
 
                 TypeAttachment.VIDEO -> {
-                    with(binding){
+                    with(binding) {
                         videoPreview.isVisible = true
                         fabPlay.isVisible = true
                         videoPreview.setVideoURI(media.uri)
@@ -100,9 +99,11 @@ class NewPostFragment : Fragment(), MenuProvider {
         binding.edit.requestFocus()
         return binding.root
     }
+
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_new_post, menu)
     }
+
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean =
         when (menuItem.itemId) {
             R.id.save -> {
@@ -110,7 +111,7 @@ class NewPostFragment : Fragment(), MenuProvider {
                 if (text.isNotBlank()) {
                     this@NewPostFragment.viewModelPost.savePost(text)
                 }
-                viewModelPost.clearPhoto()
+                viewModelPost.clearMedia()
                 AndroidUtils.hideKeyboard(requireView())
                 findNavController().navigateUp()
                 true
@@ -157,6 +158,7 @@ class NewPostFragment : Fragment(), MenuProvider {
             }
             else -> false
         }
+
     private fun pickMediaLauncher(type: TypeAttachment): ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             when (it.resultCode) {
@@ -178,6 +180,13 @@ class NewPostFragment : Fragment(), MenuProvider {
                     if (file != null) {
                         viewModelPost.changeMedia(uriFile, file, type)
                     }
+                }
+                Activity.RESULT_CANCELED -> {
+                    Snackbar.make(
+                        binding.root,
+                        getString(R.string.contracts_is_canceled),
+                        Snackbar.LENGTH_LONG
+                    ).show()
                 }
             }
         }

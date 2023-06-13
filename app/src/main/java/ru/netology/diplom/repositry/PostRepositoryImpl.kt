@@ -1,19 +1,23 @@
 package ru.netology.diplom.repositry
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dao.PostDao
 import ru.netology.diplom.dao.PostRemoteKeyDao
+import ru.netology.diplom.dao.WallDao
 import ru.netology.diplom.db.AppDb
 import ru.netology.diplom.dto.*
 import ru.netology.diplom.entity.PostEntity
+import ru.netology.diplom.entity.WallEntity
+import ru.netology.diplom.entity.toDto
 import ru.netology.diplom.error.ApiError
 import ru.netology.diplom.error.NetworkError
 import ru.netology.diplom.model.MediaModel
@@ -24,6 +28,7 @@ import javax.inject.Singleton
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
+    private val wallDao: WallDao,
     private val apiService: ApiService,
     private val appAuth: AppAuth,
     private val appDb: AppDb,
@@ -32,17 +37,24 @@ class PostRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalPagingApi::class)
     override val data = Pager(
-    config = PagingConfig(10, enablePlaceholders = false),
-    pagingSourceFactory = { postDao.getPaging() },
-    remoteMediator = PostRemoteMediator(
-    apiService = apiService,
-    postDao = postDao,
-    postRemoteKeyDao = postRemoteKeyDao,
-    appDb = appDb
-    )
+        config = PagingConfig(10, enablePlaceholders = false),
+        pagingSourceFactory = { postDao.getPaging() },
+        remoteMediator = PostRemoteMediator(
+            apiService = apiService,
+            postDao = postDao,
+            postRemoteKeyDao = postRemoteKeyDao,
+            appDb = appDb
+        )
     ).flow
-    .map { it.map(PostEntity::toDto) }
+        .map { it.map(PostEntity::toDto) }
 
+    override val wallData: LiveData<List<Wall>> = wallDao.get()
+        .map(List<WallEntity>::toDto)
+
+    val _userData = MutableLiveData<User>()
+
+    override val userData: LiveData<User>
+        get() = _userData
 
     override suspend fun authorization(login: String, pass: String) {
         try {
@@ -71,29 +83,29 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun registrationWithAvatar(login: String, pass: String, name: String, media: MediaModel) {
+    override suspend fun registrationWithAvatar(
+        login: String,
+        pass: String,
+        name: String,
+        media: MediaModel
+    ) {
         try {
             val part = MultipartBody.Part.createFormData(
                 "file", media.file.name, media.file.asRequestBody()
             )
 
             val response = apiService.registerWithAvatar(
-                login.toRequestBody("text/plain".toMediaType()),
-                pass.toRequestBody("text/plain".toMediaType()),
-                name.toRequestBody("text/plain".toMediaType()),
+                login,//.toRequestBody("text/plain".toMediaType()),
+                pass,//.toRequestBody("text/plain".toMediaType()),
+                name, //.toRequestBody("text/plain".toMediaType()),
                 part
             )
-
             if (!response.isSuccessful) {
                 throw ApiError(response.code(), response.message())
             }
 
             val field = response.body() ?: throw HttpException(response)
             field.token?.let { appAuth.setAuth(field.id, it) }
-  //          _signUpApp.postValue(body)
-   //         _stateSignUp.value = SignUpModelState()
-  //          clearAvatar()
-
         } catch (e: IOException) {
             throw NetworkError
         }
@@ -112,25 +124,52 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getWallByAuthorId(id: Long) {
+        try {
+            val wallResponse = apiService.getWallById(id)
+            if (!wallResponse.isSuccessful) {
+                throw ApiError(wallResponse.code(), wallResponse.message())
+            }
+            val walls = wallResponse.body().orEmpty()
+            wallDao.removeAll()
+            wallDao.insert(walls.map(WallEntity::fromDto))
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+    override suspend fun getUserById(id: Long){
+        _userData.value = User(0,"NoLogin", "Noname", null)
+         try {
+             val user = apiService.getUserById(id)
+             if (!user.isSuccessful) {
+                 throw ApiError(user.code(), user.message())
+             }
+             _userData.value = user.body() ?: null
+         } catch (e: IOException) {
+             throw NetworkError
+         }
+     }
+
     override suspend fun likeById(id: Long) {
-        postDao.likeById(id)
+
         try {
             val postResponse = apiService.likePostById(id)
             if (!postResponse.isSuccessful) {
                 throw ApiError(postResponse.code(), postResponse.message())
             }
+            postDao.likeById(id)
         } catch (e: IOException) {
             throw NetworkError
         }
     }
 
     override suspend fun unlikeById(id: Long) {
-        postDao.likeById(id)
         try {
             val postResponse = apiService.unlikePostById(id)
             if (!postResponse.isSuccessful) {
                 throw ApiError(postResponse.code(), postResponse.message())
             }
+            postDao.likeById(id)
         } catch (e: IOException) {
             throw NetworkError
         }
@@ -144,10 +183,15 @@ class PostRepositoryImpl @Inject constructor(
         try {
             val postResponce = apiService.deletePostById(id)
             if (!postResponce.isSuccessful) {
-                throw  ApiError(postResponce.code(), postResponce.message())
+                throw ApiError(postResponce.code(), postResponce.message())
             }
             postDao.removeById(id)
-        } catch (_: Exception) {}
+        } catch (_: Exception) {
+        }
+    }
+
+    override suspend fun removeWallPostDao(id: Long) {
+        wallDao.removeById(id)
     }
 
     override suspend fun save(post: PostCreate) {
@@ -168,7 +212,12 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun saveWithAttachment(post: PostCreate, mediaModel: MediaModel) {
         try {
             val media = upload(mediaModel)
-            val posts = post.copy(attachment = Attachment(media.url, type = mediaModel.type)) //TypeAttachment.IMAGE))
+            val posts = post.copy(
+                attachment = Attachment(
+                    media.url,
+                    type = mediaModel.type
+                )
+            )
             val response = apiService.savePost(posts)
 
             if (!response.isSuccessful) {
@@ -180,6 +229,7 @@ class PostRepositoryImpl @Inject constructor(
             throw NetworkError
         }
     }
+
     override suspend fun upload(upload: MediaModel): Media {
         try {
             val media = MultipartBody.Part.createFormData(
@@ -196,4 +246,5 @@ class PostRepositoryImpl @Inject constructor(
             throw NetworkError
         }
     }
+
 }

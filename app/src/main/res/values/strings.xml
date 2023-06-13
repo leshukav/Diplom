@@ -17,7 +17,7 @@
     <string name="name">Name</string>
     <string name="cancel">Cancel</string>
     <string name="ok">Ok</string>
-    <string name="Exit">Are you sure to get out</string>
+    <string name="Exit">Are you sure to get out?</string>
     <string name="Wait_authorization">Wait authorization</string>
     <string name="Login_is_Null">Login is Null</string>
     <string name="Login_not_found">Login not found</string>
@@ -42,5 +42,8 @@
     <string name="enter_text">Enter text</string>
     <string name="share_content">Share content</string>
     <string name="image">Image</string>
+    <string name="contracts_is_canceled">Activity result contracts is canceled</string>
+    <string name="menu">menu</string>
+    <string name="clear">clear</string>
 
 </resources>

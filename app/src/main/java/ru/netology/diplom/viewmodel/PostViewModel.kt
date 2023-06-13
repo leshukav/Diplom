@@ -10,10 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
-import ru.netology.diplom.dto.Coordinates
-import ru.netology.diplom.dto.Post
-import ru.netology.diplom.dto.PostCreate
-import ru.netology.diplom.dto.TypeAttachment
+import ru.netology.diplom.dto.*
 import ru.netology.diplom.model.MediaModel
 import ru.netology.diplom.model.PostModelState
 import ru.netology.diplom.repositry.PostRepository
@@ -53,21 +50,22 @@ class PostViewModel @Inject constructor(
                 }
         }.flowOn(Dispatchers.Default)
 
-//    val newerCount: LiveData<Int> = data.switchMap {
-//        repository.getNewerCount(it.posts.firstOrNull()?.id ?: 0L)
-//            .catch { e -> e.printStackTrace() }
-//            .asLiveData(Dispatchers.Default)
-//    }
+    val wallData: LiveData<List<Wall>> = repository.wallData
 
-
-//    private val _media = MutableLiveData<MediaModel?>(null)
-    //   val media: MutableLiveData<MediaModel?>
-//        get() = _media
+    val userData: LiveData<User> = repository.userData
 
     init {
         loadPosts()
     }
 
+    fun loadUserData(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.getUserById(id)
+            } catch (e: Exception) {
+            }
+        }
+    }
 
     fun loadPosts() {
         _state.value = PostModelState(loading = true)
@@ -80,19 +78,34 @@ class PostViewModel @Inject constructor(
             }
         }
     }
-      fun removePostById(id: Long) {
-          viewModelScope.launch {
-              try {
-                  repository.removePostById(id)
-             //     _state.value = FeedModelState(removeError = false)
-              } catch (e: Exception) {
-            //      _state.value = FeedModelState(removeError = true)
-                  //              postOld?.let { repository.saveOld(it) }
-              }
-          }
-      }
 
-    fun savePost(content: String){
+    fun loadWallById(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.getWallByAuthorId(id)
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun removePostById(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.removePostById(id)
+                //     _state.value = FeedModelState(removeError = false)
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    fun removeWallPostDao(id: Long) {
+        viewModelScope.launch {
+            repository.removeWallPostDao(id)
+        }
+
+    }
+
+    fun savePost(content: String) {
         val text = content.trim()
         val post = edited.value
         if (post != null) {
@@ -103,11 +116,11 @@ class PostViewModel @Inject constructor(
                             repository.save(post = post.copy(content = text))
                         }
                         else -> {
-                           repository.saveWithAttachment(post = post.copy(content = text), media)
+                            repository.saveWithAttachment(post = post.copy(content = text), media)
                         }
                     }
                     edited.value = empty
-                    clearPhoto()
+                    clearMedia()
 
                 } catch (_: Exception) {
 
@@ -141,58 +154,13 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+
     fun changeMedia(uri: Uri, file: File, type: TypeAttachment) {
         _media.value = MediaModel(uri, file, type)
     }
 
-    fun clearPhoto() {
+    fun clearMedia() {
         _media.value = null
     }
-
-    /*
-    fun shareById(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.shareById(id)
-            } catch (e: Exception) {
-                _state.value = FeedModelState(error = true)
-            }
-        }
-    }
-
-    fun edit(post: Post) {
-        edited.value = post
-    }
-
-   */
-
-    /*  fun loadNewer() {
-          viewModelScope.launch {
-              try {
-                  repository.loadNewer()
-                  _state.value = FeedModelState()
-              } catch (e: Exception) {
-                  _state.value = FeedModelState(error = true)
-              }
-          }
-      }
-
-      suspend fun unreadCount(): Int {
-          return repository.unreadCount()
-      }
-
-      fun refreshPosts() {
-          _state.value = FeedModelState(refreshing = true)
-          viewModelScope.launch {
-              try {
-                  repository.refresh()     //getAll()
-                  _state.value = FeedModelState(refreshing = false)
-              } catch (e: Exception) {
-                  _state.value = FeedModelState(error = true)
-              }
-          }
-      }
-
-     */
 
 }

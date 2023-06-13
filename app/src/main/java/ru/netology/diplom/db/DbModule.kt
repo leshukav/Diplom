@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import ru.netology.diplom.dao.EventDao
 import ru.netology.diplom.dao.PostDao
 import ru.netology.diplom.dao.PostRemoteKeyDao
+import ru.netology.diplom.dao.WallDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -39,4 +40,10 @@ class DbModule {
     fun provideEventDao(
         appDb: AppDb
     ): EventDao = appDb.eventDao()
+
+    @Provides
+    fun provideWallDao(
+        appDb: AppDb
+    ): WallDao = appDb.wallDao()
+
 }

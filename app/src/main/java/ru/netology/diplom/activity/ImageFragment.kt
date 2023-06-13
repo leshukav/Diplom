@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import ru.netology.diplom.R
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
 import ru.netology.diplom.databinding.FragmentImageBinding
 

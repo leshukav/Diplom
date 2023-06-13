@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_gravity="center_horizontal|bottom"
-            android:text="clear" />
+            android:text="@string/clear" />
     </FrameLayout>
 
     <com.google.android.material.textfield.TextInputLayout

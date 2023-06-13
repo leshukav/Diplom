@@ -1,7 +1,6 @@
 package ru.netology.diplom.activity
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,13 +27,13 @@ class LogoutFragment : DialogFragment() {
 
         binding.buttonOk.setOnClickListener {
             appAuth.removeAuth()
-                findNavController().navigate(R.id.action_logoutFragment_to_mainFragment)
+            findNavController().navigate(R.id.action_logoutFragment_to_mainFragment)
         }
 
         binding.buttonCancel.setOnClickListener {
             findNavController().navigateUp()
         }
         return binding.root
-}
+    }
 
 }

@@ -119,12 +119,16 @@ class RegisterFragment : Fragment() {
             if (state.errorCode) {
                 binding.loading.isVisible = false
                 Toast.makeText(context, R.string.Login_not_found, Toast.LENGTH_LONG).show()
+                binding.loginRegistr.isEnabled = true
+                binding.passRegistr.isEnabled = true
+                binding.passCheckRegistr.isEnabled = true
+                binding.registrButton.isClickable = true
             } else {
                 binding.loading.isVisible = false
             }
         }
         authViewModel.data.observe(viewLifecycleOwner) {
-            if (authViewModel.authorized ) {
+            if (authViewModel.authorized) {
                 findNavController().navigateUp()
             }
         }

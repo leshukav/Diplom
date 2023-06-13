@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_authorFragment2_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_authorFragment2_to_imageFragment3"
+            app:destination="@id/imageFragment3" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -88,5 +91,8 @@
         <action
             android:id="@+id/action_imageFragment3_to_mainFragment"
             app:destination="@id/mainFragment" />
+        <action
+            android:id="@+id/action_imageFragment3_to_authorFragment2"
+            app:destination="@id/authorFragment2" />
     </fragment>
 </navigation>

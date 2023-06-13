@@ -150,18 +150,22 @@ interface ApiService {
         @Field("name") name: String
     ): Response<AuthModel>
 
+    @FormUrlEncoded
     @Multipart
     @POST("/api/users/registration/")
     suspend fun registerWithAvatar(
-        @Part("login") login: RequestBody,
-        @Part("pass") pass: RequestBody,
-        @Part("name") name: RequestBody,
+        @Field("login") login: String,
+        @Field("pass") pass: String,
+        @Field("name") name: String,
+        //    @Part("login") login: RequestBody,
+        //   @Part("pass") pass: RequestBody,
+        //   @Part("name") name: RequestBody,
         @Part media: MultipartBody.Part,
     ): Response<AuthModel>
 
     // Wall
     @GET("/api/{author_id}/wall/")
-    suspend fun getWallById(@Path("author_id") author_id: Long): Response<List<Post>>
+    suspend fun getWallById(@Path("author_id") author_id: Long): Response<List<Wall>>
 
     @GET("/api/{author_id}/wall/latest/")
     suspend fun getLatestWallById(

@@ -37,17 +37,28 @@ class MediaLifecycleObserver : LifecycleEventObserver {
         mediaPlayer?.pause()
     }
 
-    fun isPaused(): Boolean = (!mediaPlayer?.isPlaying!! && mediaPlayer?.currentPosition!! > 0)
+    fun isPaused(): Boolean {
+         if (mediaPlayer != null)
+           return (!mediaPlayer?.isPlaying!! && mediaPlayer?.currentPosition!! > 0)
+        else return false
+    }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
-            Lifecycle.Event.ON_PAUSE -> mediaPlayer?.pause()
+            Lifecycle.Event.ON_PAUSE -> {
+                mediaPlayer?.pause()
+            }
             Lifecycle.Event.ON_STOP -> {
+                scope?.cancel()
                 mediaPlayer?.release()
                 mediaPlayer = null
             }
-            Lifecycle.Event.ON_DESTROY -> source.lifecycle.removeObserver(this)
-            else -> Unit
+            Lifecycle.Event.ON_DESTROY -> {
+                source.lifecycle.removeObserver(this)
+            }
+            else -> {
+                Unit
+            }
         }
     }
 

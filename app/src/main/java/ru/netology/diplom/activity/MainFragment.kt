@@ -32,12 +32,13 @@ import ru.netology.diplom.utils.StringArgs
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class MainFragment : Fragment(), MenuProvider {
-    companion object{
+    companion object {
         var Bundle.textArg by StringArgs
+        val observer = MediaLifecycleObserver()
     }
+
     lateinit var binding: FragmentMainBinding
     lateinit var adapter: PostAdapter
-    private val observer = MediaLifecycleObserver()
     private var playPostId = -1L
     private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
@@ -57,7 +58,10 @@ class MainFragment : Fragment(), MenuProvider {
             override fun onClik(post: Post) {
                 observer.mediaPlayer?.release()
                 observer.mediaPlayer = null
+                viewModelPost.loadWallById(post.authorId)
+                viewModelPost.loadUserData(post.authorId)
                 findNavController().navigate(R.id.authorFragment2)
+
             }
 
             override fun onRemove(post: Post) {
@@ -104,10 +108,12 @@ class MainFragment : Fragment(), MenuProvider {
             }
 
             override fun onImage(post: Post) {
-               val url = post.attachment?.url
-                findNavController().navigate(R.id.action_mainFragment_to_imageFragment3, Bundle().apply {
-                    textArg = url
-                })
+                val url = post.attachment?.url
+                findNavController().navigate(
+                    R.id.action_mainFragment_to_imageFragment3,
+                    Bundle().apply {
+                        textArg = url
+                    })
             }
 
         })
@@ -171,8 +177,6 @@ class MainFragment : Fragment(), MenuProvider {
             adapter.refresh()
             //    viewModelPost.refreshPosts()
         }
-
-
         return binding.root
     }
 

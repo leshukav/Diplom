@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
-import ru.netology.diplom.dto.Attachment
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.model.AuthModel
 import ru.netology.diplom.model.AuthModelState
@@ -56,7 +55,6 @@ class AuthViewModel @Inject constructor(
                     null -> repository.registration(login, pass, name)
                     else -> repository.registrationWithAvatar(login, pass, name, media)
                 }
-            //    repository.registration(login, pass, name)
                 _state.value = AuthModelState(authorized = true)
             } catch (e: Exception) {
                 _state.value = AuthModelState(errorCode = true)
