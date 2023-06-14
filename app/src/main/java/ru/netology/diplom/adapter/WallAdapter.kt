@@ -87,6 +87,7 @@ class WallViewHolder(
                     }
                     TypeAttachment.VIDEO -> {
                         image.visibility = View.GONE
+                        audioGroup.visibility = View.GONE
                         videoGroup.visibility = View.VISIBLE
                         videoView.setVideoURI(
                             Uri.parse(wall.attachment?.url)
@@ -94,6 +95,7 @@ class WallViewHolder(
                         videoView.seekTo(10)
                     }
                     TypeAttachment.AUDIO -> {
+                        videoGroup.visibility = View.GONE
                         image.visibility = View.VISIBLE
                         audioGroup.visibility = View.VISIBLE
                         image.setImageResource(R.drawable.music_logo)

@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.net.toFile
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.isGone
@@ -56,42 +57,48 @@ class NewPostFragment : Fragment(), MenuProvider {
         }
 
         viewModelPost.media.observe(viewLifecycleOwner) { media ->
-            if (media == null) {
-                binding.photoContainer.isGone = true
-                return@observe
-            }
-            binding.photoContainer.isVisible = true
-            binding.clear.isVisible = true
-            when (media.type) {
-                TypeAttachment.IMAGE -> {
-                    binding.preview.setImageURI(media.uri)
+            with(binding){
+                if (media == null) {
+                    photoContainer.isGone = true
+                    return@observe
                 }
-                TypeAttachment.AUDIO -> {
-                    binding.preview.setImageResource(R.drawable.music_logo)
-                }
-
-                TypeAttachment.VIDEO -> {
-                    with(binding) {
-                        videoPreview.isVisible = true
-                        fabPlay.isVisible = true
-                        videoPreview.setVideoURI(media.uri)
-                        videoPreview.seekTo(10)
-                        fabPlay.setOnClickListener {
-                            fabPlay.isVisible = false
-                            videoPreview.apply {
-                                setMediaController(MediaController(context))
-                                setVideoURI(media.uri)
-                                setOnPreparedListener {
-                                    start()
-                                }
-                                setOnCompletionListener {
-                                    stopPlayback()
-                                    fabPlay.isVisible = true
-                                }
-                            }
-                        }
+                photoContainer.isVisible = true
+                clear.isVisible = true
+                when (media.type) {
+                    TypeAttachment.IMAGE -> {
+                        videoPreview.isVisible = false
+                        fabPlay.isVisible = false
+                        preview.isVisible = true
+                        preview.setImageURI(media.uri)
+                    }
+                    TypeAttachment.AUDIO -> {
+                        preview.isVisible = true
+                        videoPreview.isVisible = false
+                        fabPlay.isVisible = false
+                        preview.setImageResource(R.drawable.music_logo)
                     }
 
+                    TypeAttachment.VIDEO -> {
+                            preview.isVisible = false
+                            videoPreview.isVisible = true
+                            fabPlay.isVisible = true
+                            videoPreview.setVideoURI(media.uri)
+                            videoPreview.seekTo(10)
+                            fabPlay.setOnClickListener {
+                                fabPlay.isVisible = false
+                                videoPreview.apply {
+                                    setMediaController(MediaController(context))
+                                    setVideoURI(media.uri)
+                                    setOnPreparedListener {
+                                        start()
+                                    }
+                                    setOnCompletionListener {
+                                        stopPlayback()
+                                        fabPlay.isVisible = true
+                                    }
+                                }
+                            }
+                    }
                 }
             }
 
@@ -171,6 +178,9 @@ class NewPostFragment : Fragment(), MenuProvider {
                 }
                 Activity.RESULT_OK -> {
                     val uri: Uri? = it.data?.data
+                    if (type == TypeAttachment.IMAGE) {
+                            uri?.toFile()?.let { file -> viewModelPost.changeMedia(uri, file, type) }
+                    } else {
                     val file = context?.let {
                         if (uri != null) {
                             fileUtils.uriToFile(it, uri)
@@ -180,6 +190,7 @@ class NewPostFragment : Fragment(), MenuProvider {
                     if (file != null) {
                         viewModelPost.changeMedia(uriFile, file, type)
                     }
+                }
                 }
                 Activity.RESULT_CANCELED -> {
                     Snackbar.make(

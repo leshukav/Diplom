@@ -156,6 +156,7 @@ class PostViewModel @Inject constructor(
     }
 
     fun changeMedia(uri: Uri, file: File, type: TypeAttachment) {
+        clearMedia()
         _media.value = MediaModel(uri, file, type)
     }
 

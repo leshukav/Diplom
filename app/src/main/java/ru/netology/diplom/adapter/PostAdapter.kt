@@ -90,6 +90,7 @@ class PostViewHolder(
                     TypeAttachment.AUDIO -> {
                         image.visibility = View.VISIBLE
                         audioGroup.visibility = View.VISIBLE
+                        videoGroup.visibility = View.GONE
                         image.setImageResource(R.drawable.music_logo)
                         seekBar.max = 0
                     }
