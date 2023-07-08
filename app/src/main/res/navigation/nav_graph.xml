@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="ru.netology.diplom.activity.MainFragment"
-        android:label="@string/posts"
+        android:label="@string/nework"
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_authorFragment2"
@@ -47,7 +47,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="ru.netology.diplom.activity.LoginFragment"
-        android:label="fragment_login"
+        android:label="@string/login"
         tools:layout="@layout/fragment_login" >
         <action
             android:id="@+id/action_loginFragment_to_logoutFragment"
@@ -56,7 +56,7 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="ru.netology.diplom.activity.RegisterFragment"
-        android:label="fragment_register"
+        android:label="@string/registration"
         tools:layout="@layout/fragment_register" >
         <action
             android:id="@+id/action_registerFragment_to_logoutFragment"
@@ -68,7 +68,7 @@
     <dialog
         android:id="@+id/logoutFragment"
         android:name="ru.netology.diplom.activity.LogoutFragment"
-        android:label="fragment_logout"
+        android:label="@string/logout"
         tools:layout="@layout/fragment_logout" >
         <action
             android:id="@+id/action_logoutFragment_to_mainFragment"

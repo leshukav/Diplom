@@ -46,5 +46,6 @@
     <string name="menu">menu</string>
     <string name="clear">clear</string>
     <string name="event">Event</string>
+    <string name="nework">NeWork</string>
 
 </resources>

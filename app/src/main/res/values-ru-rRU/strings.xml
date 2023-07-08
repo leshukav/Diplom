@@ -45,4 +45,5 @@
     <string name="menu">меню</string>
     <string name="clear">удалить</string>
     <string name="event">Event</string>
+    <string name="nework">NeWork</string>
 </resources>
