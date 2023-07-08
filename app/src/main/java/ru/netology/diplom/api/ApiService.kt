@@ -154,12 +154,9 @@ interface ApiService {
     @Multipart
     @POST("/api/users/registration/")
     suspend fun registerWithAvatar(
-        @Field("login") login: String,
-        @Field("pass") pass: String,
-        @Field("name") name: String,
-        //    @Part("login") login: RequestBody,
-        //   @Part("pass") pass: RequestBody,
-        //   @Part("name") name: RequestBody,
+        @Part("login") login: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("name") name: RequestBody,
         @Part media: MultipartBody.Part,
     ): Response<AuthModel>
 

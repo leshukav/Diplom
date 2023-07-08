@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
@@ -85,7 +87,7 @@ class PostRepositoryImpl @Inject constructor(
 
     override suspend fun registrationWithAvatar(
         login: String,
-        pass: String,
+        password: String,
         name: String,
         media: MediaModel
     ) {
@@ -95,9 +97,9 @@ class PostRepositoryImpl @Inject constructor(
             )
 
             val response = apiService.registerWithAvatar(
-                login,//.toRequestBody("text/plain".toMediaType()),
-                pass,//.toRequestBody("text/plain".toMediaType()),
-                name, //.toRequestBody("text/plain".toMediaType()),
+                login.toRequestBody("text/plain".toMediaType()),
+                password.toRequestBody("text/plain".toMediaType()),
+                name.toRequestBody("text/plain".toMediaType()),
                 part
             )
             if (!response.isSuccessful) {
@@ -157,7 +159,7 @@ class PostRepositoryImpl @Inject constructor(
             if (!postResponse.isSuccessful) {
                 throw ApiError(postResponse.code(), postResponse.message())
             }
-            postDao.likeById(id)
+            postDao.likeById(id, appAuth.getAuthId())
         } catch (e: IOException) {
             throw NetworkError
         }
@@ -169,14 +171,14 @@ class PostRepositoryImpl @Inject constructor(
             if (!postResponse.isSuccessful) {
                 throw ApiError(postResponse.code(), postResponse.message())
             }
-            postDao.likeById(id)
+            postDao.unLikeById(id, appAuth.getAuthId())
         } catch (e: IOException) {
             throw NetworkError
         }
     }
 
     override suspend fun cancelLike(id: Long) {
-        postDao.likeById(id)
+        postDao.unLikeById(id, appAuth.getAuthId())
     }
 
     override suspend fun removePostById(id: Long) {

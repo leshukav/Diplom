@@ -1,9 +1,11 @@
 package ru.netology.diplom.activity
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SeekBar
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -18,10 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.diplom.R
 import ru.netology.diplom.adapter.Listener
 import ru.netology.diplom.adapter.PostAdapter
+import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentMainBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.utils.MediaLifecycleObserver
@@ -36,7 +40,6 @@ class MainFragment : Fragment(), MenuProvider {
         var Bundle.textArg by StringArgs
         val observer = MediaLifecycleObserver()
     }
-
     lateinit var binding: FragmentMainBinding
     lateinit var adapter: PostAdapter
     private var playPostId = -1L
@@ -51,9 +54,9 @@ class MainFragment : Fragment(), MenuProvider {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = FragmentMainBinding.inflate(inflater)
         lifecycle.addObserver(observer)
-
         adapter = PostAdapter(object : Listener {
             override fun onClik(post: Post) {
                 observer.mediaPlayer?.release()
@@ -69,7 +72,7 @@ class MainFragment : Fragment(), MenuProvider {
             }
 
             override fun onLike(post: Post) {
-                if (!post.likeByMe) {
+                if (!post.likeOwnerIds.contains(authViewModel.data.value?.id)) {
                     viewModelPost.likeById(post.id)
                 } else {
                     viewModelPost.unlikeById(post.id)
@@ -116,11 +119,11 @@ class MainFragment : Fragment(), MenuProvider {
                     })
             }
 
-        })
+        }, AppAuth(requireContext()))
 
-        val dividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
-        dividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_drawable))
-        binding.listPosts.addItemDecoration(dividerItemDecoration)
+  //      val dividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
+    //    dividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_drawable))
+   //     binding.listPosts.addItemDecoration(dividerItemDecoration)
 
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {

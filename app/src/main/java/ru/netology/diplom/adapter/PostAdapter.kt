@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.netology.diplom.R
+import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.CardPostBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.dto.TypeAttachment
@@ -32,11 +33,12 @@ interface Listener {
 }
 
 class PostAdapter(
-    private val onListener: Listener
+    private val onListener: Listener,
+    private val auth: AppAuth
 ) : PagingDataAdapter<Post, PostViewHolder>(PostDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = CardPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, onListener)
+        return PostViewHolder(binding, onListener, auth)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -47,7 +49,8 @@ class PostAdapter(
 
 class PostViewHolder(
     private val binding: CardPostBinding,
-    private val onListener: Listener
+    private val onListener: Listener,
+    private val auth: AppAuth
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(post: Post) {
         binding.apply {
@@ -103,9 +106,8 @@ class PostViewHolder(
 
             }
 
-            like.isChecked = post.likeByMe
-            like.text =
-                if (like.isChecked) Count.logic(post.likeOwnerIds.size + 1) else (Count.logic(post.likeOwnerIds.size))
+            like.isChecked =  post.likeOwnerIds.contains(auth.getAuthId())
+            like.text = Count.logic(post.likeOwnerIds.size)
 
             fabPlay.setOnClickListener {
                 fabPlay.visibility = View.GONE

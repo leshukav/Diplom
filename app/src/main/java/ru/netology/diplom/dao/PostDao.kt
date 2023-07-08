@@ -28,12 +28,23 @@ interface PostDao {
     @Query("DELETE FROM PostEntity")
     suspend fun removeAll()
 
-    @Query(
-        """
-        UPDATE PostEntity SET
-        likeByMe = CASE WHEN likeByMe = 1 THEN 0 ELSE 1 END
-        WHERE id = :id
-        """
-    )
-    suspend fun likeById(id: Long)
+    @Query("SELECT * FROM PostEntity WHERE id = :id")
+    suspend fun getPost(id: Long): PostEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun save(post: PostEntity)
+
+    suspend fun likeById(id: Long, userId: Long) {
+        val post = getPost(id)
+        val likeUser = post.likeOwnerIds.toMutableList()
+        likeUser.add(userId)
+        save(post.copy(likeOwnerIds = likeUser))
+    }
+
+    suspend fun unLikeById(id: Long, userId: Long) {
+        val post = getPost(id)
+        val likeUser = post.likeOwnerIds.toMutableList()
+        likeUser.remove(userId)
+        save(post.copy(likeOwnerIds = likeUser))
+    }
 }
