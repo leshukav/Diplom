@@ -7,10 +7,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import ru.netology.diplom.dao.EventDao
-import ru.netology.diplom.dao.PostDao
-import ru.netology.diplom.dao.PostRemoteKeyDao
-import ru.netology.diplom.dao.WallDao
+import ru.netology.diplom.dao.event.EventDao
+import ru.netology.diplom.dao.event.EventRemoteKeyDao
+import ru.netology.diplom.dao.post.PostDao
+import ru.netology.diplom.dao.post.PostRemoteKeyDao
+import ru.netology.diplom.dao.post.WallDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -35,6 +36,11 @@ class DbModule {
     fun providePostRemoteKeyDao(
         appDb: AppDb
     ): PostRemoteKeyDao = appDb.postRemoteKeyDao()
+
+    @Provides
+    fun provideEventRemoteKeyDao(
+        appDb: AppDb
+    ): EventRemoteKeyDao = appDb.eventRemoteKeyDao()
 
     @Provides
     fun provideEventDao(

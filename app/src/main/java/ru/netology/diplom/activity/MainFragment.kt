@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
+import ru.netology.diplom.activity.event.EventFragment
+import ru.netology.diplom.activity.post.PostFragment
 import ru.netology.diplom.adapter.ViewPagerAdapter
 import ru.netology.diplom.databinding.FragmentMainBinding
 import ru.netology.diplom.utils.MediaLifecycleObserver
@@ -30,7 +32,7 @@ class MainFragment : Fragment(), MenuProvider {
 
     private val fragmentList = listOf(
         PostFragment(),
-        JobFragment()
+        EventFragment()
     )
     private val tabList = listOf(
         "POSTS",
@@ -70,10 +72,6 @@ class MainFragment : Fragment(), MenuProvider {
             }
             R.id.logout -> {
                 findNavController().navigate(R.id.logoutFragment)
-                true
-            }
-            R.id.addPost -> {
-                findNavController().navigate(R.id.newPostFragment)
                 true
             }
             else -> false

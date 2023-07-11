@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
+import ru.netology.diplom.activity.wall.WallFragment
 import ru.netology.diplom.adapter.ViewPagerAdapter
 import ru.netology.diplom.adapter.loadAvatar
 import ru.netology.diplom.databinding.FragmentAuthorBinding
@@ -22,13 +23,11 @@ class AuthorFragment : Fragment() {
 
     private val fragmentList = listOf(
         WallFragment(),
-        JobFragment(),
-        MediaFragment()
+        JobFragment()
     )
     private val tabList = listOf(
         "POSTS",
         "JOBS",
-        "MEDIA",
     )
 
     override fun onCreateView(

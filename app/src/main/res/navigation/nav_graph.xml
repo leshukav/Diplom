@@ -28,6 +28,12 @@
         <action
             android:id="@+id/action_mainFragment_to_imageFragment3"
             app:destination="@id/imageFragment3" />
+        <action
+            android:id="@+id/action_mainFragment_to_newEventFragment"
+            app:destination="@id/newEventFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_imageFragment32"
+            app:destination="@id/imageFragment3" />
     </fragment>
     <fragment
         android:id="@+id/authorFragment2"
@@ -46,7 +52,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="ru.netology.diplom.activity.LoginFragment"
+        android:name="ru.netology.diplom.activity.auth.LoginFragment"
         android:label="@string/login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -55,7 +61,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
-        android:name="ru.netology.diplom.activity.RegisterFragment"
+        android:name="ru.netology.diplom.activity.auth.RegisterFragment"
         android:label="@string/registration"
         tools:layout="@layout/fragment_register" >
         <action
@@ -67,7 +73,7 @@
     </fragment>
     <dialog
         android:id="@+id/logoutFragment"
-        android:name="ru.netology.diplom.activity.LogoutFragment"
+        android:name="ru.netology.diplom.activity.auth.LogoutFragment"
         android:label="@string/logout"
         tools:layout="@layout/fragment_logout" >
         <action
@@ -76,7 +82,7 @@
     </dialog>
     <fragment
         android:id="@+id/newPostFragment"
-        android:name="ru.netology.diplom.activity.NewPostFragment"
+        android:name="ru.netology.diplom.activity.post.NewPostFragment"
         android:label="@string/addPost"
         tools:layout="@layout/fragment_new_post" >
         <action
@@ -92,7 +98,16 @@
             android:id="@+id/action_imageFragment3_to_mainFragment"
             app:destination="@id/mainFragment" />
         <action
-            android:id="@+id/action_imageFragment3_to_authorFragment2"
-            app:destination="@id/authorFragment2" />
+            android:id="@+id/action_imageFragment3_to_mainFragment2"
+            app:destination="@id/mainFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newEventFragment"
+        android:name="ru.netology.diplom.activity.event.NewEventFragment"
+        android:label="@string/add_event"
+        tools:layout="@layout/fragment_new_event" >
+        <action
+            android:id="@+id/action_newEventFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

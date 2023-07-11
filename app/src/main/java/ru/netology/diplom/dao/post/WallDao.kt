@@ -1,4 +1,4 @@
-package ru.netology.diplom.dao
+package ru.netology.diplom.dao.post
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao

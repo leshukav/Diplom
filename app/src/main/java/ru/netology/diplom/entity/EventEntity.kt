@@ -4,10 +4,11 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import ru.netology.diplom.dto.*
 
 
-@Entity(tableName = "event")
+@Entity(tableName = "EventEntity")
 data class EventEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
@@ -20,6 +21,7 @@ data class EventEntity(
     val published: String,
     @Embedded
     var coords: Coordinates? = null,
+    @SerializedName("type")
     val types: Type,
     var likeOwnerIds: List<Long> = emptyList(),
     val likeByMe: Boolean,

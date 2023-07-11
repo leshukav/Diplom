@@ -1,4 +1,4 @@
-package ru.netology.diplom.dao
+package ru.netology.diplom.dao.post
 
 import androidx.room.Dao
 import androidx.room.Insert

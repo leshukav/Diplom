@@ -1,11 +1,12 @@
-package ru.netology.diplom.repositry
+package ru.netology.diplom.repositry.post
 
 import androidx.paging.*
 import androidx.room.withTransaction
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
-import ru.netology.diplom.dao.PostDao
-import ru.netology.diplom.dao.PostRemoteKeyDao
+import ru.netology.diplom.dao.event.EventDao
+import ru.netology.diplom.dao.post.PostDao
+import ru.netology.diplom.dao.post.PostRemoteKeyDao
 import ru.netology.diplom.db.AppDb
 import ru.netology.diplom.entity.PostEntity
 import ru.netology.diplom.entity.PostRemoteKeyEntity
@@ -27,12 +28,11 @@ class PostRemoteMediator(
         try {
             val responce = when (loadType) {
                 LoadType.REFRESH -> {
-                    val id = postRemoteKeyDao.max()
-                    if (id == 0L || id == null) {
-                        apiService.getLatestPosts(state.config.pageSize)
-                    } else {
+                    val id = postRemoteKeyDao.max() ?: return MediatorResult.Success(false)
+                    if (id == 0L) {
                         apiService.getBeforePosts(id, state.config.pageSize)
-
+                    } else {
+                        apiService.getLatestPosts(state.config.pageSize)
                     }
                 }
                 LoadType.PREPEND -> {
@@ -40,7 +40,7 @@ class PostRemoteMediator(
                 }
                 LoadType.APPEND -> {
                     val id = postRemoteKeyDao.min() ?: return MediatorResult.Success(false)
-                    apiService.getBeforePosts(id, state.config.pageSize)
+                    apiService.getAfterPosts(id, state.config.pageSize)
                 }
             }
 

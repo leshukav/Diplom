@@ -1,20 +1,18 @@
-package ru.netology.diplom.repositry
+package ru.netology.diplom.repositry.post
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
-import ru.netology.diplom.dao.PostDao
-import ru.netology.diplom.dao.PostRemoteKeyDao
-import ru.netology.diplom.dao.WallDao
+import ru.netology.diplom.dao.post.PostDao
+import ru.netology.diplom.dao.post.PostRemoteKeyDao
+import ru.netology.diplom.dao.post.WallDao
 import ru.netology.diplom.db.AppDb
 import ru.netology.diplom.dto.*
 import ru.netology.diplom.entity.PostEntity
@@ -45,7 +43,7 @@ class PostRepositoryImpl @Inject constructor(
             apiService = apiService,
             postDao = postDao,
             postRemoteKeyDao = postRemoteKeyDao,
-            appDb = appDb
+            appDb = appDb,
         )
     ).flow
         .map { it.map(PostEntity::toDto) }
@@ -58,60 +56,6 @@ class PostRepositoryImpl @Inject constructor(
     override val userData: LiveData<User>
         get() = _userData
 
-    override suspend fun authorization(login: String, pass: String) {
-        try {
-            val response = apiService.authUser(login, pass)
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            val field = response.body() ?: throw HttpException(response)
-            field.token?.let { appAuth.setAuth(field.id, it) }
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-
-    override suspend fun registration(login: String, pass: String, name: String) {
-        try {
-            val response = apiService.registrationUser(login, pass, name)
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-            val field = response.body() ?: throw HttpException(response)
-            field.token?.let { appAuth.setAuth(field.id, it) }
-
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-
-    override suspend fun registrationWithAvatar(
-        login: String,
-        password: String,
-        name: String,
-        media: MediaModel
-    ) {
-        try {
-            val part = MultipartBody.Part.createFormData(
-                "file", media.file.name, media.file.asRequestBody()
-            )
-
-            val response = apiService.registerWithAvatar(
-                login.toRequestBody("text/plain".toMediaType()),
-                password.toRequestBody("text/plain".toMediaType()),
-                name.toRequestBody("text/plain".toMediaType()),
-                part
-            )
-            if (!response.isSuccessful) {
-                throw ApiError(response.code(), response.message())
-            }
-
-            val field = response.body() ?: throw HttpException(response)
-            field.token?.let { appAuth.setAuth(field.id, it) }
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
 
     override suspend fun getPosts() {
         try {

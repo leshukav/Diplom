@@ -46,4 +46,9 @@
     <string name="clear">удалить</string>
     <string name="event">Event</string>
     <string name="nework">NeWork</string>
+    <string name="avatar">Avatar</string>
+    <string name="like">Like</string>
+    <string name="share">Share</string>
+    <string name="member">Member</string>
+    <string name="add_event">Add Event</string>
 </resources>

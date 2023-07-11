@@ -1,4 +1,4 @@
-package ru.netology.diplom.repositry
+package ru.netology.diplom.repositry.post
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagingData
@@ -13,12 +13,6 @@ interface PostRepository {
     val wallData: LiveData<List<Wall>>
 
     val userData: LiveData<User>
-
-    suspend fun authorization(login: String, pass: String)
-
-    suspend fun registration(login: String, pass: String,name: String)
-
-    suspend fun registrationWithAvatar(login: String, pass: String, name: String, media: MediaModel)
 
     suspend fun getPosts()
 

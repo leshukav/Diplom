@@ -1,4 +1,4 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.post
 
 import android.app.Activity
 import android.content.Intent

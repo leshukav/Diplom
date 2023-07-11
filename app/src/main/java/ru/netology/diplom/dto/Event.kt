@@ -1,5 +1,7 @@
 package ru.netology.diplom.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class Event(
     val id: Long,
     val authorId: Long,
@@ -10,6 +12,7 @@ data class Event(
     val datetime: String,
     val published: String,
     var coords: Coordinates? = null,
+    @SerializedName("type")
     val types: Type,
     var likeOwnerIds: List<Long> = emptyList(),
     val likeByMe: Boolean,

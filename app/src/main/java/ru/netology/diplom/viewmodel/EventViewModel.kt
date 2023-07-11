@@ -1,121 +1,100 @@
 package ru.netology.diplom.viewmodel
 
 import android.net.Uri
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dto.*
+import ru.netology.diplom.model.EventModelState
 import ru.netology.diplom.model.MediaModel
-import ru.netology.diplom.model.PostModelState
-import ru.netology.diplom.repositry.post.PostRepository
+import ru.netology.diplom.repositry.event.EventRepository
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
-class PostViewModel @Inject constructor(
-    private val repository: PostRepository,
+class EventViewModel@Inject constructor(
+    private val repository: EventRepository,
     private val appAuth: AppAuth,
 ) : ViewModel() {
-    private val empty = PostCreate(
+    private val empty = EventCreate(
         id = appAuth.getAuthId(),
         content = "",
+        datetime = "2023-07-10",
         coords = Coordinates("10.000000", "10.000000"),
+        types = Type.ONLINE,
         link = "www.hi.ru",
-        mentionIds = listOf(appAuth.getAuthId()),
+        speakerIds = listOf(appAuth.getAuthId())
     )
     private val _media = MutableLiveData<MediaModel?>(null)
     val media: MutableLiveData<MediaModel?>
         get() = _media
 
-    private val _state = MutableLiveData(PostModelState())
-    val state: LiveData<PostModelState>
+    private val _state = MutableLiveData(EventModelState())
+    val state: LiveData<EventModelState>
         get() = _state
 
     val edited = MutableLiveData(empty)
 
-    val data: Flow<PagingData<Post>> = appAuth
+    val data: Flow<PagingData<Event>> = appAuth
         .authStateFlow
         .flatMapLatest { (myId, _) ->
             repository.data
-                .map { posts ->
-                    posts.map { it.copy(ownedByMe = it.authorId == myId) }
+                .map { events ->
+                    events.map { it.copy(ownedByMe = it.authorId == myId) }
                 }
         }.flowOn(Dispatchers.Default)
 
-    val wallData: LiveData<List<Wall>> = repository.wallData
-
-    val userData: LiveData<User> = repository.userData
-
     init {
-        loadPosts()
+        loadEvents()
     }
 
-    fun loadUserData(id: Long) {
+    fun loadEvents() {
+        _state.value = EventModelState(loading = true)
         viewModelScope.launch {
             try {
-                repository.getUserById(id)
+                repository.getEvent()
+                _state.value = EventModelState()
             } catch (e: Exception) {
+                _state.value = EventModelState(error = true)
             }
         }
     }
 
-    fun loadPosts() {
-        _state.value = PostModelState(loading = true)
+    fun removeEventById(id: Long) {
         viewModelScope.launch {
             try {
-                repository.getPosts()
-                _state.value = PostModelState()
-            } catch (e: Exception) {
-                _state.value = PostModelState(error = true)
-            }
-        }
-    }
-
-    fun loadWallById(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.getWallByAuthorId(id)
-            } catch (e: Exception) {
-            }
-        }
-    }
-
-    fun removePostById(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.removePostById(id)
+                repository.removeEventById(id)
                 //     _state.value = FeedModelState(removeError = false)
             } catch (e: Exception) {
             }
         }
     }
 
-    fun removeWallPostDao(id: Long) {
-        viewModelScope.launch {
-            repository.removeWallPostDao(id)
-        }
-
-    }
-
-    fun savePost(content: String) {
+    fun saveEvent(content: String) {
         val text = content.trim()
-        val post = edited.value
-        if (post != null) {
+        val event = edited.value
+        if (event != null) {
             viewModelScope.launch {
                 try {
                     when (val media = media.value) {
                         null -> {
-                            repository.save(post = post.copy(content = text))
+                            repository.save(event = event.copy(content = text))
                         }
                         else -> {
-                            repository.saveWithAttachment(post = post.copy(content = text), media)
+                            repository.saveWithAttachment(event = event.copy(content = text), media)
                         }
                     }
                     edited.value = empty

@@ -1,11 +1,13 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.event
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,57 +18,58 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import ru.netology.diplom.R
+import ru.netology.diplom.activity.MainFragment
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
-import ru.netology.diplom.adapter.Listener
-import ru.netology.diplom.adapter.PostAdapter
+import ru.netology.diplom.adapter.*
 import ru.netology.diplom.auth.AppAuth
-import ru.netology.diplom.databinding.FragmentPostBinding
-import ru.netology.diplom.dto.Post
+import ru.netology.diplom.databinding.FragmentEventBinding
+import ru.netology.diplom.dto.Event
 import ru.netology.diplom.viewmodel.AuthViewModel
+import ru.netology.diplom.viewmodel.EventViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class PostFragment : Fragment() {
+class EventFragment : Fragment() {
 
-    lateinit var binding: FragmentPostBinding
-    lateinit var adapter: PostAdapter
+    lateinit var binding: FragmentEventBinding
+    private lateinit var adapter: EventAdapter
+    private val viewModelEvent: EventViewModel by activityViewModels()
     private var playPostId = -1L
-    private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
+    private val viewModelPost: PostViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPostBinding.inflate(inflater)
+        binding = FragmentEventBinding.inflate(inflater)
         lifecycle.addObserver(MainFragment.observer)
-        adapter = PostAdapter(object : Listener {
-            override fun onClik(post: Post) {
+        adapter = EventAdapter(object : EventListener {
+            override fun onClik(event: Event) {
                 MainFragment.observer.mediaPlayer?.release()
                 MainFragment.observer.mediaPlayer = null
-                viewModelPost.loadWallById(post.authorId)
-                viewModelPost.loadUserData(post.authorId)
+                viewModelPost.loadWallById(event.authorId)
+                viewModelPost.loadUserData(event.authorId)
                 findNavController().navigate(R.id.authorFragment2)
-
             }
 
-            override fun onRemove(post: Post) {
-                viewModelPost.removePostById(post.id)
+            override fun onRemove(event: Event) {
+                viewModelEvent.removeEventById(event.id)
             }
 
-            override fun onLike(post: Post) {
-                if (!post.likeOwnerIds.contains(authViewModel.data.value?.id)) {
-                    viewModelPost.likeById(post.id)
+            override fun onLike(event: Event) {
+                if (!event.likeOwnerIds.contains(authViewModel.data.value?.id)) {
+                    viewModelEvent.likeById(event.id)
                 } else {
-                    viewModelPost.unlikeById(post.id)
+                    viewModelEvent.unlikeById(event.id)
                 }
             }
 
-            override fun onPlayMusic(post: Post, seekBar: SeekBar) {
-                if (!MainFragment.observer.isPaused() || post.id != playPostId) {
-                    playPostId = post.id
-                    val url = post.attachment?.url
+            override fun onPlayMusic(event: Event, seekBar: SeekBar) {
+                if (!MainFragment.observer.isPaused() || event.id != playPostId) {
+                    playPostId = event.id
+                    val url = event.attachment?.url
                     MainFragment.observer.apply {
                         mediaPlayer?.reset()
                         mediaPlayer?.setDataSource(url)
@@ -76,7 +79,7 @@ class PostFragment : Fragment() {
                 }
             }
 
-            override fun onPlayVideo(post: Post) {
+            override fun onPlayVideo(event: Event) {
 
             }
 
@@ -84,18 +87,18 @@ class PostFragment : Fragment() {
                 MainFragment.observer.onPause()
             }
 
-            override fun onShare(post: Post) {
+            override fun onShare(event: Event) {
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, post.content)
+                    putExtra(Intent.EXTRA_TEXT, event.content)
                     type = "text/plain"
                 }
                 val shareIntent = Intent.createChooser(intent, getString(R.string.share_content))
                 startActivity(shareIntent)
             }
 
-            override fun onImage(post: Post) {
-                val url = post.attachment?.url
+            override fun onImage(event: Event) {
+                val url = event.attachment?.url
                 findNavController().navigate(
                     R.id.action_mainFragment_to_imageFragment3,
                     Bundle().apply {
@@ -105,28 +108,23 @@ class PostFragment : Fragment() {
 
         }, AppAuth(requireContext()))
 
-        //      val dividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
-        //    dividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_drawable))
-        //     binding.listPosts.addItemDecoration(dividerItemDecoration)
-
-
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 if (positionStart == 0) {
-                    binding.listPosts.smoothScrollToPosition(0)
+                    binding.listEvent.smoothScrollToPosition(0)
                 }
             }
         })
 
-        binding.listPosts.layoutManager = LinearLayoutManager(requireContext())
-        binding.listPosts.adapter = adapter
-        viewModelPost.state.observe(viewLifecycleOwner) { state ->
+        binding.listEvent.layoutManager = LinearLayoutManager(requireContext())
+        binding.listEvent.adapter = adapter
+        viewModelEvent.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
 
             if (state.error) {
                 Snackbar.make(binding.root, R.string.error, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry_loading) {
-                        viewModelPost.loadPosts()
+                        viewModelEvent.loadEvents()
                     }
                     .show()
             }
@@ -148,25 +146,29 @@ class PostFragment : Fragment() {
         }
 
         lifecycleScope.launchWhenCreated {
-            viewModelPost.data.collectLatest(adapter::submitData)
+            viewModelEvent.data.collectLatest(adapter::submitData)
         }
 
 
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest {
                 binding.swiperefresh.isRefreshing = it.refresh is LoadState.Loading
-                        || it.append is LoadState.Loading
-                        || it.prepend is LoadState.Loading
+             //           || it.append is LoadState.Loading
+              //          || it.prepend is LoadState.Loading
             }
         }
 
         binding.swiperefresh.setOnRefreshListener {
             adapter.refresh()
-            //    viewModelPost.refreshPosts()
         }
 
+        authViewModel.state.observe(viewLifecycleOwner) {
+            binding.addEvent.isVisible = authViewModel.authorized
+        }
 
-
+        binding.addEvent.setOnClickListener {
+            findNavController().navigate(R.id.newEventFragment)
+        }
 
         return binding.root
     }

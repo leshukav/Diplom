@@ -1,4 +1,4 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.auth
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -91,9 +91,9 @@ class RegisterFragment : Fragment() {
             val name = binding.name.text.toString()
             val login = binding.loginRegistr.text.toString()
             if (!login.isNullOrBlank() || !name.isNullOrBlank()) {
-                val pass = binding.passRegistr.text.toString()
+                val password = binding.passRegistr.text.toString()
                 val passCheck = binding.passCheckRegistr.text.toString()
-                if (pass.equals(passCheck)) {
+                if (password.equals(passCheck)) {
                     AndroidUtils.hideKeyboard(requireView())
                     with(binding) {
                         registrButton.let { button ->
@@ -106,7 +106,7 @@ class RegisterFragment : Fragment() {
                         passCheckRegistr.isEnabled = false
                     }
 
-                    authViewModel.registration(login, pass, name)
+                    authViewModel.registration(login, password, name)
                 } else {
                     Toast.makeText(context, R.string.Password_not_correct, Toast.LENGTH_LONG).show()
                 }

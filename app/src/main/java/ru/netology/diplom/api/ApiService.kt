@@ -13,7 +13,7 @@ interface ApiService {
     suspend fun getAllEvents(): Response<List<Event>>
 
     @POST("/api/events/")
-    suspend fun saveEvent(@Body eventCreate: EventCreate): Response<EventCreate>
+    suspend fun saveEvent(@Body eventCreate: EventCreate): Response<Event>
 
     @GET("/api/events/latest/")
     suspend fun getLatestEvent(@Query("count") count: Int): Response<List<Event>>
@@ -150,7 +150,6 @@ interface ApiService {
         @Field("name") name: String
     ): Response<AuthModel>
 
-    @FormUrlEncoded
     @Multipart
     @POST("/api/users/registration/")
     suspend fun registerWithAvatar(

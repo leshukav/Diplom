@@ -1,4 +1,4 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.auth
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

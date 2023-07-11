@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:foregroundTint="#FFFFFF"
     tools:context=".activity.post.PostFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -17,16 +16,16 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="72dp">
+            app:layout_constraintVertical_bias="1.0"
+            tools:layout_editor_absoluteX="0dp">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listPosts"
+                android:id="@+id/listEvent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#EDEDE5"
                 tools:ignore="MissingConstraints"
-                tools:listitem="@layout/card_post" />
+                tools:listitem="@layout/card_event" />
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -43,7 +42,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/addPost"
+        android:id="@+id/addEvent"
         style="@style/Widget.AppTheme.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,5 +54,4 @@
         app:iconTint="@color/purple_500"
 
         />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,4 +1,4 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.wall
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,9 +9,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
 import ru.netology.diplom.activity.MainFragment.Companion.observer
@@ -94,10 +92,6 @@ class WallFragment : Fragment() {
         viewModelPost.wallData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
         }
-
-        val dividerItemDecoration = DividerItemDecoration(this.context, RecyclerView.VERTICAL)
-        dividerItemDecoration.setDrawable(resources.getDrawable(R.drawable.divider_drawable))
-        binding.rcView.addItemDecoration(dividerItemDecoration)
 
         return binding.root
     }

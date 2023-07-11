@@ -9,9 +9,9 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/mainLayout"
+        style="@style/MyCustomTabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        style="@style/MyCustomTabLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_max="24dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,35 +41,5 @@
         app:layout_constraintTop_toBottomOf="@+id/mainLayout"
         app:layout_constraintVertical_bias="1.0" />
 
-
- <!--   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swiperefresh"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="72dp">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listPosts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:ignore="MissingConstraints"
-            android:background="#EDEDE5"
-            tools:listitem="@layout/card_post" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
--->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

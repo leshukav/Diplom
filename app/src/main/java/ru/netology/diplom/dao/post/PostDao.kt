@@ -1,4 +1,4 @@
-package ru.netology.diplom.dao
+package ru.netology.diplom.dao.post
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
