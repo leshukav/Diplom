@@ -9,9 +9,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.netology.diplom.dao.event.EventDao
 import ru.netology.diplom.dao.event.EventRemoteKeyDao
+import ru.netology.diplom.dao.job.JobDao
 import ru.netology.diplom.dao.post.PostDao
 import ru.netology.diplom.dao.post.PostRemoteKeyDao
-import ru.netology.diplom.dao.post.WallDao
+import ru.netology.diplom.dao.wall.WallDao
+import ru.netology.diplom.dao.user.UserDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -23,7 +25,7 @@ class DbModule {
     fun provideDb(
         @ApplicationContext
         context: Context
-    ) : AppDb = Room.databaseBuilder(context, AppDb::class.java, "app.db")
+    ): AppDb = Room.databaseBuilder(context, AppDb::class.java, "app.db")
         .fallbackToDestructiveMigration()
         .build()
 
@@ -52,4 +54,13 @@ class DbModule {
         appDb: AppDb
     ): WallDao = appDb.wallDao()
 
+    @Provides
+    fun provideJobDao(
+        appDb: AppDb
+    ): JobDao = appDb.jobDao()
+
+    @Provides
+    fun provideUserDao(
+        appDb: AppDb
+    ): UserDao = appDb.userDao()
 }

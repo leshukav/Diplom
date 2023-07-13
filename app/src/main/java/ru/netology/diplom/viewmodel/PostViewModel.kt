@@ -38,7 +38,7 @@ class PostViewModel @Inject constructor(
     val state: LiveData<PostModelState>
         get() = _state
 
-    val edited = MutableLiveData(empty)
+    private val edited = MutableLiveData(empty)
 
     val data: Flow<PagingData<Post>> = appAuth
         .authStateFlow
@@ -78,6 +78,14 @@ class PostViewModel @Inject constructor(
         }
     }
 
+    fun loadMyWall(){
+        viewModelScope.launch {
+            try {
+                repository.getMyWall()
+            } catch (e: Exception) {
+            }
+        }
+    }
     fun loadWallById(id: Long) {
         viewModelScope.launch {
             try {
@@ -149,6 +157,31 @@ class PostViewModel @Inject constructor(
             } catch (e: Exception) {
                 repository.cancelLike(id)
                 //         _state.value = FeedModelState(likeError = true)
+
+            }
+        }
+    }
+
+     fun likeByIdWall(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.likeByIdWall(id)
+                //  _state.value = FeedModelState(likeError = false)
+            } catch (e: Exception) {
+                repository.cancelLike(id)
+                //    _state.value = FeedModelState(likeError = true)
+            }
+        }
+    }
+
+    fun unlikeByIdWall(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.unlikeByIdWall(id)
+                //  _state.value = FeedModelState(likeError = false)
+            } catch (e: Exception) {
+                repository.cancelLike(id)
+                //    _state.value = FeedModelState(likeError = true)
 
             }
         }

@@ -20,6 +20,10 @@ interface PostRepository {
 
     suspend fun unlikeById(id: Long)
 
+    suspend fun likeByIdWall(id: Long)
+
+    suspend fun unlikeByIdWall(id: Long)
+
     suspend fun cancelLike(id: Long)
 
     suspend fun removePostById(id: Long)
@@ -31,6 +35,8 @@ interface PostRepository {
     suspend fun saveWithAttachment(post: PostCreate, media: MediaModel)
 
     suspend fun upload(upload: MediaModel): Media
+
+    suspend fun getMyWall()
 
     suspend fun getWallByAuthorId(id: Long)
 

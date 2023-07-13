@@ -71,7 +71,7 @@ interface ApiService {
 
     //MyWall
     @GET("/api/my/wall/")
-    suspend fun getMyWall(): Response<List<Post>>
+    suspend fun getMyWall(): Response<List<Wall>>
 
     @GET("/api/my/wall/latest/")
     suspend fun getLatestWall(@Query("count") count: Int): Response<List<Post>>

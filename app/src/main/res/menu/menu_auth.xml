@@ -13,10 +13,17 @@
 
         <item
             android:id="@+id/logout"
-            android:icon="@drawable/ic_login_24"
+            android:icon="@drawable/logout_24"
             android:orderInCategory="1"
             android:title="@string/logout"
             app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/myWall"
+            android:icon="@drawable/ic_login_24"
+            android:orderInCategory="0"
+            android:title="@string/my_wall"
+            app:showAsAction="ifRoom" />
+
     </group>
 
 </menu>

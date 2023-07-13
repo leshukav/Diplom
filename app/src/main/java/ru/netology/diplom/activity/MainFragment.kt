@@ -14,11 +14,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
 import ru.netology.diplom.activity.event.EventFragment
 import ru.netology.diplom.activity.post.PostFragment
+import ru.netology.diplom.activity.users.UsersFragment
 import ru.netology.diplom.adapter.ViewPagerAdapter
 import ru.netology.diplom.databinding.FragmentMainBinding
 import ru.netology.diplom.utils.MediaLifecycleObserver
 import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.utils.StringArgs
+import ru.netology.diplom.viewmodel.JobViewModel
+import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -29,14 +32,18 @@ class MainFragment : Fragment(), MenuProvider {
     }
     lateinit var binding: FragmentMainBinding
     private val authViewModel: AuthViewModel by activityViewModels()
+    private val viewModelPost: PostViewModel by activityViewModels()
+    private val viewModelJob: JobViewModel by activityViewModels()
 
     private val fragmentList = listOf(
         PostFragment(),
-        EventFragment()
+        EventFragment(),
+        UsersFragment()
     )
     private val tabList = listOf(
         "POSTS",
         "EVENT",
+        "USERS"
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,6 +79,15 @@ class MainFragment : Fragment(), MenuProvider {
             }
             R.id.logout -> {
                 findNavController().navigate(R.id.logoutFragment)
+                true
+            }
+            R.id.myWall -> {
+                viewModelPost.loadMyWall()
+                viewModelJob.loadMyJob()
+                authViewModel.data.value?.let {
+                    viewModelPost.loadUserData(it.id)
+                }
+                findNavController().navigate(R.id.authorFragment2)
                 true
             }
             else -> false

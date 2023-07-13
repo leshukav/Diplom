@@ -26,6 +26,7 @@ import ru.netology.diplom.databinding.FragmentEventBinding
 import ru.netology.diplom.dto.Event
 import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.viewmodel.EventViewModel
+import ru.netology.diplom.viewmodel.JobViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
@@ -38,6 +39,7 @@ class EventFragment : Fragment() {
     private var playPostId = -1L
     private val authViewModel: AuthViewModel by activityViewModels()
     private val viewModelPost: PostViewModel by activityViewModels()
+    private val viewModelJob: JobViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,12 +47,13 @@ class EventFragment : Fragment() {
     ): View? {
         binding = FragmentEventBinding.inflate(inflater)
         lifecycle.addObserver(MainFragment.observer)
-        adapter = EventAdapter(object : EventListener {
+        adapter = EventAdapter(object : OnClick<Event> {
             override fun onClik(event: Event) {
                 MainFragment.observer.mediaPlayer?.release()
                 MainFragment.observer.mediaPlayer = null
                 viewModelPost.loadWallById(event.authorId)
                 viewModelPost.loadUserData(event.authorId)
+                viewModelJob.loadJobById(event.authorId)
                 findNavController().navigate(R.id.authorFragment2)
             }
 
@@ -59,10 +62,12 @@ class EventFragment : Fragment() {
             }
 
             override fun onLike(event: Event) {
-                if (!event.likeOwnerIds.contains(authViewModel.data.value?.id)) {
-                    viewModelEvent.likeById(event.id)
-                } else {
-                    viewModelEvent.unlikeById(event.id)
+                if (authViewModel.authorized) {
+                    if (!event.likeOwnerIds.contains(authViewModel.data.value?.id)) {
+                        viewModelEvent.likeById(event.id)
+                    } else {
+                        viewModelEvent.unlikeById(event.id)
+                    }
                 }
             }
 
@@ -153,8 +158,8 @@ class EventFragment : Fragment() {
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow.collectLatest {
                 binding.swiperefresh.isRefreshing = it.refresh is LoadState.Loading
-             //           || it.append is LoadState.Loading
-              //          || it.prepend is LoadState.Loading
+                //           || it.append is LoadState.Loading
+                //          || it.prepend is LoadState.Loading
             }
         }
 

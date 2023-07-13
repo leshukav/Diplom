@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.MediaController
 import android.widget.PopupMenu
-import android.widget.SeekBar
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
@@ -22,19 +21,8 @@ import ru.netology.diplom.dto.Type
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.utils.Count
 
-interface EventListener {
-    fun onClik(event: Event)
-    fun onRemove(event: Event)
-    fun onLike(event: Event)
-    fun onPlayMusic(event: Event, seekBar: SeekBar)
-    fun onPlayVideo(event: Event)
-    fun onPause()
-    fun onShare(event: Event)
-    fun onImage(event: Event)
-}
-
 class EventAdapter(
-    private val onListener: EventListener,
+    private val onListener: OnClick<Event>,
     private val auth: AppAuth
 ): PagingDataAdapter<Event, EventViewHolder>(EventDiffCallback())  {
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
@@ -50,7 +38,7 @@ class EventAdapter(
 
 class EventViewHolder(
     private val binding: CardEventBinding,
-    private val onListener: EventListener,
+    private val onListener: OnClick<Event>,
     private val auth: AppAuth
 ): RecyclerView.ViewHolder(binding.root){
     fun bind(event: Event) {

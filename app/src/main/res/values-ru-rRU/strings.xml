@@ -51,4 +51,14 @@
     <string name="share">Share</string>
     <string name="member">Member</string>
     <string name="add_event">Add Event</string>
+    <string name="name_job">Name Job</string>
+    <string name="new_job">New Job</string>
+    <string name="link_job">Link Job</string>
+    <string name="job">Job</string>
+    <string name="job_not_found">Job is not found</string>
+    <string name="my_wall">My Wall</string>
+    <string name="user">User</string>
+    <string name="users">Users</string>
+    <string name="wall_is_empty">Wall is empty</string>
+    <string name="post_not_found">Post is not found</string>
 </resources>

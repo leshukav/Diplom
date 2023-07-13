@@ -18,12 +18,13 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.diplom.R
 import ru.netology.diplom.activity.MainFragment
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
-import ru.netology.diplom.adapter.Listener
 import ru.netology.diplom.adapter.PostAdapter
+import ru.netology.diplom.adapter.OnClick
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentPostBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.viewmodel.AuthViewModel
+import ru.netology.diplom.viewmodel.JobViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
@@ -35,6 +36,7 @@ class PostFragment : Fragment() {
     private var playPostId = -1L
     private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
+    private val viewModelJob: JobViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,12 +44,13 @@ class PostFragment : Fragment() {
     ): View? {
         binding = FragmentPostBinding.inflate(inflater)
         lifecycle.addObserver(MainFragment.observer)
-        adapter = PostAdapter(object : Listener {
+        adapter = PostAdapter(object : OnClick<Post> {
             override fun onClik(post: Post) {
                 MainFragment.observer.mediaPlayer?.release()
                 MainFragment.observer.mediaPlayer = null
                 viewModelPost.loadWallById(post.authorId)
                 viewModelPost.loadUserData(post.authorId)
+                viewModelJob.loadJobById(post.authorId)
                 findNavController().navigate(R.id.authorFragment2)
 
             }
@@ -57,10 +60,12 @@ class PostFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if (!post.likeOwnerIds.contains(authViewModel.data.value?.id)) {
-                    viewModelPost.likeById(post.id)
-                } else {
-                    viewModelPost.unlikeById(post.id)
+                if (authViewModel.authorized) {
+                    if (!post.likeOwnerIds.contains(authViewModel.data.value?.id)) {
+                        viewModelPost.likeById(post.id)
+                    } else {
+                        viewModelPost.unlikeById(post.id)
+                    }
                 }
             }
 
@@ -162,13 +167,11 @@ class PostFragment : Fragment() {
 
         binding.swiperefresh.setOnRefreshListener {
             adapter.refresh()
-            //    viewModelPost.refreshPosts()
         }
 
         binding.addPost.setOnClickListener {
             findNavController().navigate(R.id.newPostFragment)
         }
-
 
         return binding.root
     }

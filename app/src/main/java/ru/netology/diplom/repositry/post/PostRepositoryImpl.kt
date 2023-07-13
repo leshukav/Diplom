@@ -12,7 +12,7 @@ import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dao.post.PostDao
 import ru.netology.diplom.dao.post.PostRemoteKeyDao
-import ru.netology.diplom.dao.post.WallDao
+import ru.netology.diplom.dao.wall.WallDao
 import ru.netology.diplom.db.AppDb
 import ru.netology.diplom.dto.*
 import ru.netology.diplom.entity.PostEntity
@@ -51,7 +51,7 @@ class PostRepositoryImpl @Inject constructor(
     override val wallData: LiveData<List<Wall>> = wallDao.get()
         .map(List<WallEntity>::toDto)
 
-    val _userData = MutableLiveData<User>()
+    private val _userData = MutableLiveData<User>()
 
     override val userData: LiveData<User>
         get() = _userData
@@ -65,6 +65,20 @@ class PostRepositoryImpl @Inject constructor(
             }
             val posts = response.body().orEmpty()
             postDao.insert(posts.map(PostEntity::fromDto))
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun getMyWall() {
+        try {
+            val wallResponse = apiService.getMyWall()
+            if (!wallResponse.isSuccessful) {
+                throw ApiError(wallResponse.code(), wallResponse.message())
+            }
+            val walls = wallResponse.body().orEmpty()
+            wallDao.removeAll()
+            wallDao.insert(walls.map(WallEntity::fromDto))
         } catch (e: IOException) {
             throw NetworkError
         }
@@ -116,6 +130,22 @@ class PostRepositoryImpl @Inject constructor(
                 throw ApiError(postResponse.code(), postResponse.message())
             }
             postDao.unLikeById(id, appAuth.getAuthId())
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun likeByIdWall(id: Long) {
+        try {
+            wallDao.likeById(id, appAuth.getAuthId())
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
+    override suspend fun unlikeByIdWall(id: Long) {
+        try {
+            wallDao.unLikeById(id, appAuth.getAuthId())
         } catch (e: IOException) {
             throw NetworkError
         }

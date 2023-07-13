@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.MediaController
 import android.widget.PopupMenu
-import android.widget.SeekBar
 import androidx.annotation.DrawableRes
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -15,34 +14,25 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import ru.netology.diplom.R
+import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.WallUserBinding
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.dto.Wall
 import ru.netology.diplom.utils.Count
 
-interface WallListener {
-    fun onRemove(wall: Wall)
-    fun onLike(wall: Wall)
-    fun onPlayMusic(wall: Wall, seekBar: SeekBar)
-    fun onPlayVideo(wall: Wall)
-    fun onPause()
-    fun onShare(wall: Wall)
-    fun onImage(wall: Wall)
-}
-
 class WallAdapter(
-    private val onListener: WallListener
+    private val onListener: OnClick<Wall>,
+    private val auth: AppAuth
 ) : ListAdapter<Wall, WallViewHolder>(WallDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WallViewHolder {
         val binding = WallUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return WallViewHolder(binding, onListener)
+        return WallViewHolder(binding, onListener, auth)
     }
 
     override fun onBindViewHolder(holder: WallViewHolder, position: Int) {
         val wall = getItem(position) ?: return
         holder.bind(wall)
     }
-
 }
 
 fun ImageView.loadAvatar(
@@ -62,7 +52,8 @@ fun ImageView.loadAvatar(
 
 class WallViewHolder(
     private val binding: WallUserBinding,
-    private val onListener: WallListener,
+    private val onListener: OnClick<Wall>,
+    private val auth: AppAuth
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(wall: Wall) {
         binding.apply {
@@ -109,10 +100,8 @@ class WallViewHolder(
                 }
 
             }
-
-            like.isChecked = wall.likeByMe
-            like.text =
-                if (like.isChecked) Count.logic(wall.likeOwnerIds.size + 1) else (Count.logic(wall.likeOwnerIds.size))
+            like.isChecked =  wall.likeOwnerIds.contains(auth.getAuthId())
+            like.text = Count.logic(wall.likeOwnerIds.size)
 
             fabPlay.setOnClickListener {
                 fabPlay.visibility = View.GONE

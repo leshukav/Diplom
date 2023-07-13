@@ -43,6 +43,7 @@ enum class TypeAttachment {
 }
 
 data class UserPreview(
+    @SerializedName("id")
     override val idUser: Long,
     val name: String? = null,
     val avatar: String? = null,

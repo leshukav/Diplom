@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,9 +16,11 @@ import ru.netology.diplom.R
 import ru.netology.diplom.activity.MainFragment.Companion.observer
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
 import ru.netology.diplom.adapter.WallAdapter
-import ru.netology.diplom.adapter.WallListener
+import ru.netology.diplom.adapter.OnClick
+import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentWallBinding
 import ru.netology.diplom.dto.Wall
+import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
@@ -26,14 +29,14 @@ class WallFragment : Fragment() {
     private lateinit var binding: FragmentWallBinding
     private lateinit var adapter: WallAdapter
     private val viewModelPost: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
     private var playPostId = -1L
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentWallBinding.inflate(inflater, container, false)
-        adapter = WallAdapter(object : WallListener {
+        adapter = WallAdapter(object : OnClick<Wall> {
 
             override fun onRemove(wall: Wall) {
                 viewModelPost.removeWallPostDao(wall.id)
@@ -41,10 +44,14 @@ class WallFragment : Fragment() {
             }
 
             override fun onLike(wall: Wall) {
-                if (!wall.likeByMe) {
-                    viewModelPost.likeById(wall.id)
-                } else {
-                    viewModelPost.unlikeById(wall.id)
+                if (authViewModel.authorized) {
+                    if (!wall.likeOwnerIds.contains(authViewModel.data.value?.id)) {
+                        viewModelPost.likeById(wall.id)
+                        viewModelPost.likeByIdWall(wall.id)
+                    } else {
+                        viewModelPost.unlikeById(wall.id)
+                        viewModelPost.unlikeByIdWall(wall.id)
+                    }
                 }
             }
 
@@ -62,6 +69,10 @@ class WallFragment : Fragment() {
             }
 
             override fun onPlayVideo(wall: Wall) {
+            }
+
+            override fun onClik(data: Wall) {
+
             }
 
             override fun onPause() {
@@ -86,11 +97,15 @@ class WallFragment : Fragment() {
                         textArg = url
                     })
             }
-        })
+        }, AppAuth(requireContext()))
         binding.rcView.layoutManager = LinearLayoutManager(activity)
         binding.rcView.adapter = adapter
         viewModelPost.wallData.observe(viewLifecycleOwner) {
             adapter.submitList(it)
+            if (it.isEmpty()) {
+                binding.wallEmpty.isVisible = true
+                binding.wallEmpty.text = getString(R.string.post_not_found)
+            }
         }
 
         return binding.root
