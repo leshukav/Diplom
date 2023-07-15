@@ -15,7 +15,6 @@ class diplomApp() : Application() {
     @Inject
     lateinit var appAuth: AppAuth
 
-
     override fun onCreate() {
         super.onCreate()
         setupAuth()
@@ -23,7 +22,6 @@ class diplomApp() : Application() {
 
     private fun setupAuth() {
         appScope.launch {
-   //         appAuth.sendPushToken()
         }
     }
 }

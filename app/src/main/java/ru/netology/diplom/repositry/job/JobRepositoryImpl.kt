@@ -1,13 +1,11 @@
 package ru.netology.diplom.repositry.job
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.dao.job.JobDao
 import ru.netology.diplom.dto.Job
-import ru.netology.diplom.dto.User
 import ru.netology.diplom.entity.JobEntity
 import ru.netology.diplom.entity.toDto
 import ru.netology.diplom.error.ApiError

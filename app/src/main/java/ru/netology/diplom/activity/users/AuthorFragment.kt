@@ -1,4 +1,4 @@
-package ru.netology.diplom.activity
+package ru.netology.diplom.activity.users
 
 import android.os.Bundle
 import android.view.*
@@ -13,14 +13,14 @@ import ru.netology.diplom.activity.wall.WallFragment
 import ru.netology.diplom.adapter.ViewPagerAdapter
 import ru.netology.diplom.adapter.loadAvatar
 import ru.netology.diplom.databinding.FragmentAuthorBinding
-import ru.netology.diplom.viewmodel.PostViewModel
+import ru.netology.diplom.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class AuthorFragment : Fragment() {
+class AuthorFragment() : Fragment() {
 
     lateinit var binding: FragmentAuthorBinding
-    private val viewModelPost: PostViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     private val fragmentList = listOf(
         WallFragment(),
@@ -42,7 +42,7 @@ class AuthorFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         init()
-        viewModelPost.userData.observe(viewLifecycleOwner) { user ->
+        userViewModel.user.observe(viewLifecycleOwner) { user ->
             binding.authorUser.text = user.name
             if (user.avatar != null) {
                 val url = user.avatar

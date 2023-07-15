@@ -20,7 +20,6 @@ class NewJobFragment : Fragment() {
     lateinit var binding: FragmentNewJobBinding
     private val viewModelJob: JobViewModel by activityViewModels()
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,7 +30,7 @@ class NewJobFragment : Fragment() {
             val nameJob = binding.name.text.toString()
             val linkJob = binding.link.text.toString()
             if (nameJob.isNotBlank() || linkJob.isNotBlank()) {
-                this@NewJobFragment.viewModelJob.savePost(nameJob, linkJob)
+                this@NewJobFragment.viewModelJob.saveJob(nameJob, linkJob)
                 AndroidUtils.hideKeyboard(requireView())
                 findNavController().navigateUp()
             } else {
@@ -43,6 +42,5 @@ class NewJobFragment : Fragment() {
 
         return binding.root
     }
-
 
 }

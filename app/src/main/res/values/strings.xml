@@ -62,5 +62,9 @@
     <string name="users">Users</string>
     <string name="wall_is_empty">Wall is empty</string>
     <string name="post_not_found">Post is not found</string>
+    <string name="you_need_to_register">You need to register</string>
+    <string name="edit">Edit</string>
+    <string name="you_can_t">You can\'t like it. Something happened</string>
+    <string name="failed_to_connect">Failed to connect. Try later</string>
 
 </resources>

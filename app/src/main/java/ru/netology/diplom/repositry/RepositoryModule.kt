@@ -14,6 +14,8 @@ import ru.netology.diplom.repositry.post.PostRepository
 import ru.netology.diplom.repositry.post.PostRepositoryImpl
 import ru.netology.diplom.repositry.user.UserRepository
 import ru.netology.diplom.repositry.user.UserRepositoryImpl
+import ru.netology.diplom.repositry.wall.WallRepository
+import ru.netology.diplom.repositry.wall.WallRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,6 +29,10 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindEventRepository(impl: EventRepositoryImpl): EventRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindWallRepository(impl: WallRepositoryImpl): WallRepository
 
     @Singleton
     @Binds

@@ -1,9 +1,12 @@
 package ru.netology.diplom.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.MediaController
 import android.widget.PopupMenu
@@ -100,7 +103,8 @@ class WallViewHolder(
                 }
 
             }
-            like.isChecked =  wall.likeOwnerIds.contains(auth.getAuthId())
+
+            like.isChecked = wall.likeOwnerIds.contains(auth.getAuthId())
             like.text = Count.logic(wall.likeOwnerIds.size)
 
             fabPlay.setOnClickListener {
@@ -128,6 +132,15 @@ class WallViewHolder(
             }
 
             like.setOnClickListener {
+                if (auth.getAuthId() != 0L) {
+                    val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1F, 1.5F, 1F)
+                    val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1F, 1.5F, 1F)
+                    ObjectAnimator.ofPropertyValuesHolder(it, scaleX, scaleY).apply {
+                        duration = 1000
+                        repeatCount = 1
+                        interpolator = BounceInterpolator()
+                    }.start()
+                }
                 onListener.onLike(wall)
             }
 

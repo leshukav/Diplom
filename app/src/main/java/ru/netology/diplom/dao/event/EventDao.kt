@@ -8,7 +8,6 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import ru.netology.diplom.entity.EventEntity
 
-
 @Dao
 interface EventDao {
     @Query("SELECT * FROM EventEntity ORDER BY id DESC")

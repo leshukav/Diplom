@@ -1,9 +1,12 @@
 package ru.netology.diplom.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.MediaController
 import android.widget.PopupMenu
@@ -24,7 +27,7 @@ import ru.netology.diplom.utils.Count
 class EventAdapter(
     private val onListener: OnClick<Event>,
     private val auth: AppAuth
-): PagingDataAdapter<Event, EventViewHolder>(EventDiffCallback())  {
+) : PagingDataAdapter<Event, EventViewHolder>(EventDiffCallback()) {
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         val event = getItem(position) ?: return
         holder.bind(event)
@@ -40,7 +43,7 @@ class EventViewHolder(
     private val binding: CardEventBinding,
     private val onListener: OnClick<Event>,
     private val auth: AppAuth
-): RecyclerView.ViewHolder(binding.root){
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(event: Event) {
         binding.apply {
 
@@ -101,8 +104,8 @@ class EventViewHolder(
                 }
 
             }
-
-            like.isChecked =  event.likeOwnerIds.contains(auth.getAuthId())
+            like.isCheckable = auth.getAuthId() != 0L
+            like.isChecked = event.likeOwnerIds.contains(auth.getAuthId())
             like.text = Count.logic(event.likeOwnerIds.size)
             members.text = Count.logic(event.participantsIds.size)
 
@@ -135,6 +138,15 @@ class EventViewHolder(
             }
 
             like.setOnClickListener {
+                if (auth.getAuthId() != 0L) {
+                    val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1F, 1.5F, 1F)
+                    val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1F, 1.5F, 1F)
+                    ObjectAnimator.ofPropertyValuesHolder(it, scaleX, scaleY).apply {
+                        duration = 1000
+                        repeatCount = 1
+                        interpolator = BounceInterpolator()
+                    }.start()
+                }
                 onListener.onLike(event)
             }
 
@@ -166,6 +178,7 @@ class EventViewHolder(
         }
 
     }
+
     private fun ImageView.load(
         url: String,
         @DrawableRes placeholder: Int = R.drawable.ic_loading_100dp,

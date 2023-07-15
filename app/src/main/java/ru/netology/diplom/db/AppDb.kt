@@ -11,6 +11,8 @@ import ru.netology.diplom.dao.post.PostRemoteKeyDao
 import ru.netology.diplom.dao.wall.WallDao
 import ru.netology.diplom.dao.user.UserDao
 import ru.netology.diplom.entity.*
+import ru.netology.diplom.entity.EventEntity
+import ru.netology.diplom.entity.EventRemoteKeyEntity
 import ru.netology.diplom.utils.ListConverter
 
 @TypeConverters(ListConverter::class)

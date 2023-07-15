@@ -4,7 +4,6 @@ import androidx.paging.*
 import androidx.room.withTransaction
 import retrofit2.HttpException
 import ru.netology.diplom.api.ApiService
-import ru.netology.diplom.dao.event.EventDao
 import ru.netology.diplom.dao.post.PostDao
 import ru.netology.diplom.dao.post.PostRemoteKeyDao
 import ru.netology.diplom.db.AppDb

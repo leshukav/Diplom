@@ -9,15 +9,18 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.diplom.R
 import ru.netology.diplom.adapter.JobAdapter
+import ru.netology.diplom.adapter.OnClickMenu
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentJobBinding
+import ru.netology.diplom.dto.Job
 import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.viewmodel.JobViewModel
-import ru.netology.diplom.viewmodel.PostViewModel
+import ru.netology.diplom.viewmodel.UserViewModel
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -26,7 +29,7 @@ class JobFragment : Fragment() {
     lateinit var adapter: JobAdapter
     private val viewModelJob: JobViewModel by activityViewModels()
     private val viewModelAuth: AuthViewModel by activityViewModels()
-    private val viewModelPost: PostViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreateView(
@@ -36,9 +39,13 @@ class JobFragment : Fragment() {
 
         binding = FragmentJobBinding.inflate(inflater)
 
-        adapter = JobAdapter(AppAuth(requireContext()))
+        adapter = JobAdapter(AppAuth(requireContext()), userViewModel, object : OnClickMenu {
+            override fun onClick(job: Job) {
+                viewModelJob.removeMyJobById(job.id)
+            }
+        })
 
-        viewModelPost.userData.observe(viewLifecycleOwner) { user ->
+        userViewModel.user.observe(viewLifecycleOwner) { user ->
             binding.addJob.isVisible = viewModelAuth.data.value?.id == user.idUser
         }
 
@@ -52,11 +59,35 @@ class JobFragment : Fragment() {
             }
         }
 
+        viewModelJob.state.observe(viewLifecycleOwner) { state ->
+            binding.progress.isVisible = state.loading
+
+            if (state.loadError) {
+                Snackbar.make(binding.root, R.string.error, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.retry_loading) {
+                    }
+                    .show()
+            }
+
+            if (state.removeError) {
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.failed_to_connect),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(R.string.ok) {}
+                    .show()
+            }
+            if (state.saveError) {
+                Snackbar.make(binding.root, R.string.failed_to_connect, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.ok) {}
+                    .show()
+            }
+        }
+
         binding.addJob.setOnClickListener {
             findNavController().navigate(R.id.newJobFragment)
         }
-
         return binding.root
     }
-
 }

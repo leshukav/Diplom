@@ -1,8 +1,5 @@
 package ru.netology.diplom.repositry.post
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import androidx.paging.*
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -12,12 +9,9 @@ import ru.netology.diplom.api.ApiService
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dao.post.PostDao
 import ru.netology.diplom.dao.post.PostRemoteKeyDao
-import ru.netology.diplom.dao.wall.WallDao
 import ru.netology.diplom.db.AppDb
 import ru.netology.diplom.dto.*
 import ru.netology.diplom.entity.PostEntity
-import ru.netology.diplom.entity.WallEntity
-import ru.netology.diplom.entity.toDto
 import ru.netology.diplom.error.ApiError
 import ru.netology.diplom.error.NetworkError
 import ru.netology.diplom.model.MediaModel
@@ -28,7 +22,6 @@ import javax.inject.Singleton
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     private val postDao: PostDao,
-    private val wallDao: WallDao,
     private val apiService: ApiService,
     private val appAuth: AppAuth,
     private val appDb: AppDb,
@@ -48,15 +41,6 @@ class PostRepositoryImpl @Inject constructor(
     ).flow
         .map { it.map(PostEntity::toDto) }
 
-    override val wallData: LiveData<List<Wall>> = wallDao.get()
-        .map(List<WallEntity>::toDto)
-
-    private val _userData = MutableLiveData<User>()
-
-    override val userData: LiveData<User>
-        get() = _userData
-
-
     override suspend fun getPosts() {
         try {
             val response = apiService.getAllPosts()
@@ -69,46 +53,6 @@ class PostRepositoryImpl @Inject constructor(
             throw NetworkError
         }
     }
-
-    override suspend fun getMyWall() {
-        try {
-            val wallResponse = apiService.getMyWall()
-            if (!wallResponse.isSuccessful) {
-                throw ApiError(wallResponse.code(), wallResponse.message())
-            }
-            val walls = wallResponse.body().orEmpty()
-            wallDao.removeAll()
-            wallDao.insert(walls.map(WallEntity::fromDto))
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-
-    override suspend fun getWallByAuthorId(id: Long) {
-        try {
-            val wallResponse = apiService.getWallById(id)
-            if (!wallResponse.isSuccessful) {
-                throw ApiError(wallResponse.code(), wallResponse.message())
-            }
-            val walls = wallResponse.body().orEmpty()
-            wallDao.removeAll()
-            wallDao.insert(walls.map(WallEntity::fromDto))
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-    override suspend fun getUserById(id: Long){
-        _userData.value = User(0,"NoLogin", "Noname", null)
-         try {
-             val user = apiService.getUserById(id)
-             if (!user.isSuccessful) {
-                 throw ApiError(user.code(), user.message())
-             }
-             _userData.value = user.body() ?: null
-         } catch (e: IOException) {
-             throw NetworkError
-         }
-     }
 
     override suspend fun likeById(id: Long) {
 
@@ -135,22 +79,6 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun likeByIdWall(id: Long) {
-        try {
-            wallDao.likeById(id, appAuth.getAuthId())
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-
-    override suspend fun unlikeByIdWall(id: Long) {
-        try {
-            wallDao.unLikeById(id, appAuth.getAuthId())
-        } catch (e: IOException) {
-            throw NetworkError
-        }
-    }
-
     override suspend fun cancelLike(id: Long) {
         postDao.unLikeById(id, appAuth.getAuthId())
     }
@@ -164,10 +92,6 @@ class PostRepositoryImpl @Inject constructor(
             postDao.removeById(id)
         } catch (_: Exception) {
         }
-    }
-
-    override suspend fun removeWallPostDao(id: Long) {
-        wallDao.removeById(id)
     }
 
     override suspend fun save(post: PostCreate) {

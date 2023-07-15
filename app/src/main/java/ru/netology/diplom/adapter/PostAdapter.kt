@@ -1,9 +1,12 @@
 package ru.netology.diplom.adapter
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.BounceInterpolator
 import android.widget.ImageView
 import android.widget.MediaController
 import android.widget.PopupMenu
@@ -93,10 +96,6 @@ class PostViewHolder(
                 }
 
             }
-
-            like.isChecked =  post.likeOwnerIds.contains(auth.getAuthId())
-            like.text = Count.logic(post.likeOwnerIds.size)
-
             fabPlay.setOnClickListener {
                 fabPlay.visibility = View.GONE
                 videoView.apply {
@@ -126,8 +125,20 @@ class PostViewHolder(
             }
 
             like.setOnClickListener {
+                if (auth.getAuthId() != 0L) {
+                    val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 1F, 1.5F, 1F)
+                    val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1F, 1.5F, 1F)
+                    ObjectAnimator.ofPropertyValuesHolder(it, scaleX, scaleY).apply {
+                        duration = 1000
+                        repeatCount = 1
+                        interpolator = BounceInterpolator()
+                    }.start()
+                }
                 onListener.onLike(post)
             }
+            like.isCheckable = auth.getAuthId() != 0L
+            like.isChecked = post.likeOwnerIds.contains(auth.getAuthId())
+            like.text = Count.logic(post.likeOwnerIds.size)
 
             share.setOnClickListener {
                 onListener.onShare(post)
@@ -147,7 +158,6 @@ class PostViewHolder(
                                 onListener.onRemove(post)
                                 true
                             }
-
                             else -> false
                         }
 
@@ -157,6 +167,7 @@ class PostViewHolder(
         }
 
     }
+
     private fun ImageView.load(
         url: String,
         @DrawableRes placeholder: Int = R.drawable.ic_loading_100dp,

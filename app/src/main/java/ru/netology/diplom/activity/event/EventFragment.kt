@@ -20,14 +20,12 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.netology.diplom.R
 import ru.netology.diplom.activity.MainFragment
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
+import ru.netology.diplom.activity.post.PostFragment
 import ru.netology.diplom.adapter.*
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentEventBinding
 import ru.netology.diplom.dto.Event
-import ru.netology.diplom.viewmodel.AuthViewModel
-import ru.netology.diplom.viewmodel.EventViewModel
-import ru.netology.diplom.viewmodel.JobViewModel
-import ru.netology.diplom.viewmodel.PostViewModel
+import ru.netology.diplom.viewmodel.*
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -38,8 +36,9 @@ class EventFragment : Fragment() {
     private val viewModelEvent: EventViewModel by activityViewModels()
     private var playPostId = -1L
     private val authViewModel: AuthViewModel by activityViewModels()
-    private val viewModelPost: PostViewModel by activityViewModels()
+    private val wallViewModel: WallViewModel by activityViewModels()
     private val viewModelJob: JobViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,12 +48,19 @@ class EventFragment : Fragment() {
         lifecycle.addObserver(MainFragment.observer)
         adapter = EventAdapter(object : OnClick<Event> {
             override fun onClik(event: Event) {
-                MainFragment.observer.mediaPlayer?.release()
-                MainFragment.observer.mediaPlayer = null
-                viewModelPost.loadWallById(event.authorId)
-                viewModelPost.loadUserData(event.authorId)
-                viewModelJob.loadJobById(event.authorId)
-                findNavController().navigate(R.id.authorFragment2)
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = PostFragment.SIGN_IN
+                        })
+                } else {
+                    MainFragment.observer.mediaPlayer?.release()
+                    MainFragment.observer.mediaPlayer = null
+                    wallViewModel.loadWallById(event.authorId)
+                    userViewModel.loadUserData(event.authorId)
+                    viewModelJob.loadJobById(event.authorId)
+                    findNavController().navigate(R.id.authorFragment2)
+                }
             }
 
             override fun onRemove(event: Event) {
@@ -62,11 +68,18 @@ class EventFragment : Fragment() {
             }
 
             override fun onLike(event: Event) {
-                if (authViewModel.authorized) {
-                    if (!event.likeOwnerIds.contains(authViewModel.data.value?.id)) {
-                        viewModelEvent.likeById(event.id)
-                    } else {
-                        viewModelEvent.unlikeById(event.id)
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = PostFragment.SIGN_IN
+                        })
+                } else {
+                    if (authViewModel.authorized) {
+                        if (!event.likeOwnerIds.contains(authViewModel.data.value?.id)) {
+                            viewModelEvent.likeById(event.id)
+                        } else {
+                            viewModelEvent.unlikeById(event.id)
+                        }
                     }
                 }
             }
@@ -93,22 +106,37 @@ class EventFragment : Fragment() {
             }
 
             override fun onShare(event: Event) {
-                val intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, event.content)
-                    type = "text/plain"
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = PostFragment.SIGN_IN
+                        })
+                } else {
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, event.content)
+                        type = "text/plain"
+                    }
+                    val shareIntent =
+                        Intent.createChooser(intent, getString(R.string.share_content))
+                    startActivity(shareIntent)
                 }
-                val shareIntent = Intent.createChooser(intent, getString(R.string.share_content))
-                startActivity(shareIntent)
             }
 
             override fun onImage(event: Event) {
-                val url = event.attachment?.url
-                findNavController().navigate(
-                    R.id.action_mainFragment_to_imageFragment3,
-                    Bundle().apply {
-                        textArg = url
-                    })
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = PostFragment.SIGN_IN
+                        })
+                } else {
+                    val url = event.attachment?.url
+                    findNavController().navigate(
+                        R.id.action_mainFragment_to_imageFragment3,
+                        Bundle().apply {
+                            textArg = url
+                        })
+                }
             }
 
         }, AppAuth(requireContext()))
@@ -126,7 +154,7 @@ class EventFragment : Fragment() {
         viewModelEvent.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
 
-            if (state.error) {
+            if (state.loadError) {
                 Snackbar.make(binding.root, R.string.error, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry_loading) {
                         viewModelEvent.loadEvents()
@@ -134,15 +162,25 @@ class EventFragment : Fragment() {
                     .show()
             }
             if (state.likeError) {
-                Snackbar.make(binding.root, "You must register", Snackbar.LENGTH_LONG)
-                    .setAction("Ok") {
-                        findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-                    }
+                Snackbar.make(
+                    binding.root, "\n" +
+                            getString(R.string.you_can_t), Snackbar.LENGTH_LONG
+                )
+                    .setAction(R.string.ok) {}
                     .show()
             }
             if (state.removeError) {
-                Snackbar.make(binding.root, "Failed to connect. Try later", Snackbar.LENGTH_LONG)
-                    .setAction("Ok") {}
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.failed_to_connect),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(R.string.ok) {}
+                    .show()
+            }
+            if (state.saveError) {
+                Snackbar.make(binding.root, R.string.failed_to_connect, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.ok) {}
                     .show()
             }
 

@@ -30,7 +30,6 @@ import ru.netology.diplom.utils.FileFromContentUri
 import ru.netology.diplom.viewmodel.PostViewModel
 import java.io.File
 
-
 @AndroidEntryPoint
 @OptIn(ExperimentalCoroutinesApi::class)
 class NewPostFragment : Fragment(), MenuProvider {
@@ -49,7 +48,7 @@ class NewPostFragment : Fragment(), MenuProvider {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentNewPostBinding.inflate(inflater, container, false)
 
         binding.clear.setOnClickListener {
@@ -57,7 +56,7 @@ class NewPostFragment : Fragment(), MenuProvider {
         }
 
         viewModelPost.media.observe(viewLifecycleOwner) { media ->
-            with(binding){
+            with(binding) {
                 if (media == null) {
                     photoContainer.isGone = true
                     return@observe
@@ -79,25 +78,25 @@ class NewPostFragment : Fragment(), MenuProvider {
                     }
 
                     TypeAttachment.VIDEO -> {
-                            preview.isVisible = false
-                            videoPreview.isVisible = true
-                            fabPlay.isVisible = true
-                            videoPreview.setVideoURI(media.uri)
-                            videoPreview.seekTo(10)
-                            fabPlay.setOnClickListener {
-                                fabPlay.isVisible = false
-                                videoPreview.apply {
-                                    setMediaController(MediaController(context))
-                                    setVideoURI(media.uri)
-                                    setOnPreparedListener {
-                                        start()
-                                    }
-                                    setOnCompletionListener {
-                                        stopPlayback()
-                                        fabPlay.isVisible = true
-                                    }
+                        preview.isVisible = false
+                        videoPreview.isVisible = true
+                        fabPlay.isVisible = true
+                        videoPreview.setVideoURI(media.uri)
+                        videoPreview.seekTo(10)
+                        fabPlay.setOnClickListener {
+                            fabPlay.isVisible = false
+                            videoPreview.apply {
+                                setMediaController(MediaController(context))
+                                setVideoURI(media.uri)
+                                setOnPreparedListener {
+                                    start()
+                                }
+                                setOnCompletionListener {
+                                    stopPlayback()
+                                    fabPlay.isVisible = true
                                 }
                             }
+                        }
                     }
                 }
             }
@@ -179,18 +178,18 @@ class NewPostFragment : Fragment(), MenuProvider {
                 Activity.RESULT_OK -> {
                     val uri: Uri? = it.data?.data
                     if (type == TypeAttachment.IMAGE) {
-                            uri?.toFile()?.let { file -> viewModelPost.changeMedia(uri, file, type) }
+                        uri?.toFile()?.let { file -> viewModelPost.changeMedia(uri, file, type) }
                     } else {
-                    val file = context?.let {
-                        if (uri != null) {
-                            fileUtils.uriToFile(it, uri)
-                        } else File("errorName")
+                        val file = context?.let {
+                            if (uri != null) {
+                                fileUtils.uriToFile(it, uri)
+                            } else File("errorName")
+                        }
+                        val uriFile = Uri.fromFile(file)
+                        if (file != null) {
+                            viewModelPost.changeMedia(uriFile, file, type)
+                        }
                     }
-                    val uriFile = Uri.fromFile(file)
-                    if (file != null) {
-                        viewModelPost.changeMedia(uriFile, file, type)
-                    }
-                }
                 }
                 Activity.RESULT_CANCELED -> {
                     Snackbar.make(

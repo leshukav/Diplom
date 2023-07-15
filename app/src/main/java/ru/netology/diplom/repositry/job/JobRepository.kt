@@ -2,7 +2,6 @@ package ru.netology.diplom.repositry.job
 
 import androidx.lifecycle.LiveData
 import ru.netology.diplom.dto.Job
-import ru.netology.diplom.dto.User
 
 interface JobRepository {
 

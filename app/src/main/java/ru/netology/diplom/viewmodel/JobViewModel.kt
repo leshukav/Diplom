@@ -9,6 +9,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dto.Job
+import ru.netology.diplom.model.JobModelState
 import ru.netology.diplom.repositry.job.JobRepository
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class JobViewModel @Inject constructor(
     private val repository: JobRepository,
     private val appAuth: AppAuth,
-): ViewModel() {
+) : ViewModel() {
     private val empty = Job(
         id = appAuth.getAuthId(),
         name = "",
@@ -29,41 +30,56 @@ class JobViewModel @Inject constructor(
 
     val jobData: LiveData<List<Job>> = repository.jobData
 
+    private val _state = MutableLiveData(JobModelState())
+    val state: LiveData<JobModelState>
+        get() = _state
+
     fun loadMyJob() {
+        _state.value = JobModelState(loading = true)
         viewModelScope.launch {
             try {
                 repository.getMyJob()
+                _state.value = JobModelState()
             } catch (e: Exception) {
+                _state.value = JobModelState(loadError = true)
             }
         }
     }
 
     fun loadJobById(id: Long) {
+        _state.value = JobModelState(loading = true)
         viewModelScope.launch {
             try {
                 repository.getUserJobById(id)
-            } catch (e: Exception) { }
+                _state.value = JobModelState()
+            } catch (e: Exception) {
+                _state.value = JobModelState(loadError = true)
+            }
         }
     }
 
-    fun removeMyJobById(id: Long){
+    fun removeMyJobById(id: Long) {
         viewModelScope.launch {
             try {
                 repository.removeMyJobById(id)
-            } catch (e: Exception) { }
+                _state.value = JobModelState()
+            } catch (e: Exception) {
+                _state.value = JobModelState(removeError = true)
+            }
         }
     }
 
-    fun savePost(nameJob: String, linkJob: String) {
+    fun saveJob(nameJob: String, linkJob: String) {
         val text = nameJob.trim()
         val job = jobCreate.value
         if (job != null) {
             viewModelScope.launch {
                 try {
                     repository.save(job = job.copy(name = text, link = linkJob))
+                    _state.value = JobModelState()
                     jobCreate.value = empty
                 } catch (_: Exception) {
-
+                    _state.value = JobModelState(saveError = true)
                 }
             }
         }

@@ -2,20 +2,29 @@ package ru.netology.diplom.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import ru.netology.diplom.R
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.CardJobBinding
 import ru.netology.diplom.dto.Job
+import ru.netology.diplom.viewmodel.UserViewModel
+
+interface OnClickMenu {
+    fun onClick(job: Job)
+}
 
 class JobAdapter(
     private val auth: AppAuth,
-): ListAdapter<Job, JobViewHolder>(JobDiffCallback()) {
+    private val userViewModel: UserViewModel,
+    private val onClickMenu: OnClickMenu,
+) : ListAdapter<Job, JobViewHolder>(JobDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobViewHolder {
         val binding = CardJobBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return JobViewHolder(binding, auth)
+        return JobViewHolder(binding, auth, userViewModel, onClickMenu)
     }
 
     override fun onBindViewHolder(holder: JobViewHolder, position: Int) {
@@ -28,15 +37,33 @@ class JobAdapter(
 class JobViewHolder(
     private val binding: CardJobBinding,
     private val auth: AppAuth,
-): RecyclerView.ViewHolder(binding.root){
+    private val userViewModel: UserViewModel,
+    private val onClickMenu: OnClickMenu,
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(job: Job) {
         binding.apply {
             name.text = job.name
             position.text = job.position
             startTime.text = job.start
             finishTime.text = job.finish
-            menu.isVisible = auth.getAuthId() ==  job.id
+            menu.isVisible = auth.getAuthId() == userViewModel.user.value?.idUser
             link.text = job.link
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.option_post)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.remove -> {
+                                onClickMenu.onClick(job)
+                                true
+                            }
+
+                            else -> false
+                        }
+
+                    }
+                }.show()
+            }
 
         }
     }

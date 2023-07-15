@@ -49,21 +49,8 @@ class PostViewModel @Inject constructor(
                 }
         }.flowOn(Dispatchers.Default)
 
-    val wallData: LiveData<List<Wall>> = repository.wallData
-
-    val userData: LiveData<User> = repository.userData
-
     init {
         loadPosts()
-    }
-
-    fun loadUserData(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.getUserById(id)
-            } catch (e: Exception) {
-            }
-        }
     }
 
     fun loadPosts() {
@@ -73,24 +60,7 @@ class PostViewModel @Inject constructor(
                 repository.getPosts()
                 _state.value = PostModelState()
             } catch (e: Exception) {
-                _state.value = PostModelState(error = true)
-            }
-        }
-    }
-
-    fun loadMyWall(){
-        viewModelScope.launch {
-            try {
-                repository.getMyWall()
-            } catch (e: Exception) {
-            }
-        }
-    }
-    fun loadWallById(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.getWallByAuthorId(id)
-            } catch (e: Exception) {
+                _state.value = PostModelState(loadError = true)
             }
         }
     }
@@ -99,17 +69,11 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.removePostById(id)
-                //     _state.value = FeedModelState(removeError = false)
+                _state.value = PostModelState()
             } catch (e: Exception) {
+                _state.value = PostModelState(removeError = true)
             }
         }
-    }
-
-    fun removeWallPostDao(id: Long) {
-        viewModelScope.launch {
-            repository.removeWallPostDao(id)
-        }
-
     }
 
     fun savePost(content: String) {
@@ -121,16 +85,18 @@ class PostViewModel @Inject constructor(
                     when (val media = media.value) {
                         null -> {
                             repository.save(post = post.copy(content = text))
+                            _state.value = PostModelState()
                         }
                         else -> {
                             repository.saveWithAttachment(post = post.copy(content = text), media)
+                            _state.value = PostModelState()
                         }
                     }
                     edited.value = empty
                     clearMedia()
 
                 } catch (_: Exception) {
-
+                    _state.value = PostModelState(saveError = true)
                 }
             }
         }
@@ -140,10 +106,10 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.likeById(id)
-                //  _state.value = FeedModelState(likeError = false)
+                _state.value = PostModelState()
             } catch (e: Exception) {
                 repository.cancelLike(id)
-                //    _state.value = FeedModelState(likeError = true)
+                _state.value = PostModelState(likeError = true)
 
             }
         }
@@ -153,35 +119,10 @@ class PostViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.unlikeById(id)
-                //          _state.value = FeedModelState(likeError = false)
+                _state.value = PostModelState()
             } catch (e: Exception) {
                 repository.cancelLike(id)
-                //         _state.value = FeedModelState(likeError = true)
-
-            }
-        }
-    }
-
-     fun likeByIdWall(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.likeByIdWall(id)
-                //  _state.value = FeedModelState(likeError = false)
-            } catch (e: Exception) {
-                repository.cancelLike(id)
-                //    _state.value = FeedModelState(likeError = true)
-            }
-        }
-    }
-
-    fun unlikeByIdWall(id: Long) {
-        viewModelScope.launch {
-            try {
-                repository.unlikeByIdWall(id)
-                //  _state.value = FeedModelState(likeError = false)
-            } catch (e: Exception) {
-                repository.cancelLike(id)
-                //    _state.value = FeedModelState(likeError = true)
+                _state.value = PostModelState(likeError = true)
 
             }
         }

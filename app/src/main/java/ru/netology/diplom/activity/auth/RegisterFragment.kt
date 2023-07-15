@@ -21,7 +21,6 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.netology.diplom.dto.TypeAttachment
 
-
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
 

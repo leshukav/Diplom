@@ -2,11 +2,9 @@ package ru.netology.diplom.entity
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import ru.netology.diplom.dto.*
-
 
 @Entity(tableName = "EventEntity")
 data class EventEntity(
@@ -82,4 +80,4 @@ data class EventEntity(
 }
 
 fun List<EventEntity>.toDto(): List<Event> = map(EventEntity::toDto)
-fun List<Event>.toEntity(): List<EventEntity> = map(EventEntity::fromDto)
+fun List<Event>.toEntity(): List<EventEntity> = map(EventEntity.Companion::fromDto)

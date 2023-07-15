@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalCoroutinesApi
-class EventViewModel@Inject constructor(
+class EventViewModel @Inject constructor(
     private val repository: EventRepository,
     private val appAuth: AppAuth,
 ) : ViewModel() {
@@ -68,7 +68,7 @@ class EventViewModel@Inject constructor(
                 repository.getEvent()
                 _state.value = EventModelState()
             } catch (e: Exception) {
-                _state.value = EventModelState(error = true)
+                _state.value = EventModelState(loadError = true)
             }
         }
     }
@@ -77,8 +77,9 @@ class EventViewModel@Inject constructor(
         viewModelScope.launch {
             try {
                 repository.removeEventById(id)
-                //     _state.value = FeedModelState(removeError = false)
+                _state.value = EventModelState()
             } catch (e: Exception) {
+                _state.value = EventModelState(removeError = true)
             }
         }
     }
@@ -92,16 +93,18 @@ class EventViewModel@Inject constructor(
                     when (val media = media.value) {
                         null -> {
                             repository.save(event = event.copy(content = text))
+                            _state.value = EventModelState()
                         }
                         else -> {
                             repository.saveWithAttachment(event = event.copy(content = text), media)
+                            _state.value = EventModelState()
                         }
                     }
                     edited.value = empty
                     clearMedia()
 
                 } catch (_: Exception) {
-
+                    _state.value = EventModelState(saveError = true)
                 }
             }
         }
@@ -111,10 +114,10 @@ class EventViewModel@Inject constructor(
         viewModelScope.launch {
             try {
                 repository.likeById(id)
-                //  _state.value = FeedModelState(likeError = false)
+                _state.value = EventModelState()
             } catch (e: Exception) {
                 repository.cancelLike(id)
-                //    _state.value = FeedModelState(likeError = true)
+                _state.value = EventModelState(likeError = true)
 
             }
         }
@@ -124,10 +127,10 @@ class EventViewModel@Inject constructor(
         viewModelScope.launch {
             try {
                 repository.unlikeById(id)
-                //          _state.value = FeedModelState(likeError = false)
+                _state.value = EventModelState()
             } catch (e: Exception) {
                 repository.cancelLike(id)
-                //         _state.value = FeedModelState(likeError = true)
+                _state.value = EventModelState(likeError = true)
 
             }
         }

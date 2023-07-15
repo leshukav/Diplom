@@ -18,10 +18,8 @@ import ru.netology.diplom.activity.users.UsersFragment
 import ru.netology.diplom.adapter.ViewPagerAdapter
 import ru.netology.diplom.databinding.FragmentMainBinding
 import ru.netology.diplom.utils.MediaLifecycleObserver
-import ru.netology.diplom.viewmodel.AuthViewModel
 import ru.netology.diplom.utils.StringArgs
-import ru.netology.diplom.viewmodel.JobViewModel
-import ru.netology.diplom.viewmodel.PostViewModel
+import ru.netology.diplom.viewmodel.*
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -30,10 +28,12 @@ class MainFragment : Fragment(), MenuProvider {
         var Bundle.textArg by StringArgs
         val observer = MediaLifecycleObserver()
     }
+
     lateinit var binding: FragmentMainBinding
     private val authViewModel: AuthViewModel by activityViewModels()
-    private val viewModelPost: PostViewModel by activityViewModels()
+    private val wallViewModel: WallViewModel by activityViewModels()
     private val viewModelJob: JobViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     private val fragmentList = listOf(
         PostFragment(),
@@ -78,20 +78,24 @@ class MainFragment : Fragment(), MenuProvider {
                 true
             }
             R.id.logout -> {
-                findNavController().navigate(R.id.logoutFragment)
+                findNavController().navigate(R.id.logoutFragment,
+                    Bundle().apply {
+                        textArg = PostFragment.SIGN_OUT
+                    })
                 true
             }
             R.id.myWall -> {
-                viewModelPost.loadMyWall()
+                wallViewModel.loadMyWall()
                 viewModelJob.loadMyJob()
                 authViewModel.data.value?.let {
-                    viewModelPost.loadUserData(it.id)
+                    userViewModel.loadUserData(it.id)
                 }
                 findNavController().navigate(R.id.authorFragment2)
                 true
             }
             else -> false
         }
+
     private fun init() {
         val adapter = ViewPagerAdapter(activity as FragmentActivity, fragmentList)
         binding.vp.adapter = adapter

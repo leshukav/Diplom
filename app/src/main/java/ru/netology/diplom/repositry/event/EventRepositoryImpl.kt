@@ -1,7 +1,5 @@
 package ru.netology.diplom.repositry.event
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -45,12 +43,6 @@ class EventRepositoryImpl @Inject constructor(
         )
     ).flow
         .map { it.map(EventEntity::toDto) }
-
-    val _userData = MutableLiveData<User>()
-
-    override val userData: LiveData<User>
-        get() = _userData
-
 
     override suspend fun getEvent() {
         try {

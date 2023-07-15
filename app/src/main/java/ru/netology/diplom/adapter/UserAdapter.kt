@@ -12,13 +12,13 @@ import ru.netology.diplom.R
 import ru.netology.diplom.databinding.CardUserBinding
 import ru.netology.diplom.dto.User
 
-interface onUserClick {
+interface OnUserClick {
     fun onClick(user: User)
 }
 
 class UserAdapter(
-    private val onListener: onUserClick
-): ListAdapter<User, UserViewHolder>(UserDiffCallback()) {
+    private val onListener: OnUserClick
+) : ListAdapter<User, UserViewHolder>(UserDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val binding = CardUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return UserViewHolder(binding, onListener)
@@ -33,8 +33,8 @@ class UserAdapter(
 
 class UserViewHolder(
     private val binding: CardUserBinding,
-    private val onListener: onUserClick
-): RecyclerView.ViewHolder(binding.root){
+    private val onListener: OnUserClick
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(user: User) {
         binding.apply {
             name.text = user.name
@@ -44,11 +44,13 @@ class UserViewHolder(
             } else {
                 avatar.setImageResource(R.drawable.ic_error_100)
             }
-            avatar.setOnClickListener {
+            cardUser.setOnClickListener {
                 onListener.onClick(user)
             }
+
         }
     }
+
     private fun ImageView.load(
         url: String,
         @DrawableRes placeholder: Int = R.drawable.ic_loading_100dp,

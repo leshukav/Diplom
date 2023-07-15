@@ -23,9 +23,7 @@ import ru.netology.diplom.adapter.OnClick
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentPostBinding
 import ru.netology.diplom.dto.Post
-import ru.netology.diplom.viewmodel.AuthViewModel
-import ru.netology.diplom.viewmodel.JobViewModel
-import ru.netology.diplom.viewmodel.PostViewModel
+import ru.netology.diplom.viewmodel.*
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -37,6 +35,13 @@ class PostFragment : Fragment() {
     private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
     private val viewModelJob: JobViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
+    private val wallViewModel: WallViewModel by activityViewModels()
+
+    companion object {
+        val SIGN_IN = "SIGN_IN"
+        val SIGN_OUT = "SIGN_OUT"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,13 +51,19 @@ class PostFragment : Fragment() {
         lifecycle.addObserver(MainFragment.observer)
         adapter = PostAdapter(object : OnClick<Post> {
             override fun onClik(post: Post) {
-                MainFragment.observer.mediaPlayer?.release()
-                MainFragment.observer.mediaPlayer = null
-                viewModelPost.loadWallById(post.authorId)
-                viewModelPost.loadUserData(post.authorId)
-                viewModelJob.loadJobById(post.authorId)
-                findNavController().navigate(R.id.authorFragment2)
-
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = SIGN_IN
+                        })
+                } else {
+                    MainFragment.observer.mediaPlayer?.release()
+                    MainFragment.observer.mediaPlayer = null
+                    wallViewModel.loadWallById(post.authorId)
+                    userViewModel.loadUserData(post.authorId)
+                    viewModelJob.loadJobById(post.authorId)
+                    findNavController().navigate(R.id.authorFragment2)
+                }
             }
 
             override fun onRemove(post: Post) {
@@ -60,7 +71,12 @@ class PostFragment : Fragment() {
             }
 
             override fun onLike(post: Post) {
-                if (authViewModel.authorized) {
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = SIGN_IN
+                        })
+                } else {
                     if (!post.likeOwnerIds.contains(authViewModel.data.value?.id)) {
                         viewModelPost.likeById(post.id)
                     } else {
@@ -91,22 +107,37 @@ class PostFragment : Fragment() {
             }
 
             override fun onShare(post: Post) {
-                val intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, post.content)
-                    type = "text/plain"
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = SIGN_IN
+                        })
+                } else {
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, post.content)
+                        type = "text/plain"
+                    }
+                    val shareIntent =
+                        Intent.createChooser(intent, getString(R.string.share_content))
+                    startActivity(shareIntent)
                 }
-                val shareIntent = Intent.createChooser(intent, getString(R.string.share_content))
-                startActivity(shareIntent)
             }
 
             override fun onImage(post: Post) {
-                val url = post.attachment?.url
-                findNavController().navigate(
-                    R.id.action_mainFragment_to_imageFragment3,
-                    Bundle().apply {
-                        textArg = url
-                    })
+                if (!authViewModel.authorized) {
+                    findNavController().navigate(R.id.logoutFragment,
+                        Bundle().apply {
+                            textArg = SIGN_IN
+                        })
+                } else {
+                    val url = post.attachment?.url
+                    findNavController().navigate(
+                        R.id.action_mainFragment_to_imageFragment3,
+                        Bundle().apply {
+                            textArg = url
+                        })
+                }
             }
 
         }, AppAuth(requireContext()))
@@ -124,7 +155,7 @@ class PostFragment : Fragment() {
         viewModelPost.state.observe(viewLifecycleOwner) { state ->
             binding.progress.isVisible = state.loading
 
-            if (state.error) {
+            if (state.loadError) {
                 Snackbar.make(binding.root, R.string.error, Snackbar.LENGTH_LONG)
                     .setAction(R.string.retry_loading) {
                         viewModelPost.loadPosts()
@@ -132,15 +163,25 @@ class PostFragment : Fragment() {
                     .show()
             }
             if (state.likeError) {
-                Snackbar.make(binding.root, "You must register", Snackbar.LENGTH_LONG)
-                    .setAction("Ok") {
-                        findNavController().navigate(R.id.action_mainFragment_to_loginFragment)
-                    }
+                Snackbar.make(
+                    binding.root, "\n" +
+                            getString(R.string.you_can_t), Snackbar.LENGTH_LONG
+                )
+                    .setAction(R.string.ok) {}
                     .show()
             }
             if (state.removeError) {
-                Snackbar.make(binding.root, "Failed to connect. Try later", Snackbar.LENGTH_LONG)
-                    .setAction("Ok") {}
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.failed_to_connect),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(R.string.ok) {}
+                    .show()
+            }
+            if (state.saveError) {
+                Snackbar.make(binding.root, R.string.failed_to_connect, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.ok) {}
                     .show()
             }
 
