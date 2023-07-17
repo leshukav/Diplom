@@ -23,6 +23,8 @@ import ru.netology.diplom.dto.Event
 import ru.netology.diplom.dto.Type
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.utils.Count
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class EventAdapter(
     private val onListener: OnClick<Event>,
@@ -47,8 +49,9 @@ class EventViewHolder(
     fun bind(event: Event) {
         binding.apply {
 
-            val split = event.published.split(".")
-            dateEvent.text = split[0]
+            val publishedTime = OffsetDateTime.parse(event.published).toLocalDateTime()
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy   HH:mm:ss")
+            dateEvent.text = publishedTime.format(formatter)
             author.text = event.author
             content.text = event.content
             job.text = event.authorJob

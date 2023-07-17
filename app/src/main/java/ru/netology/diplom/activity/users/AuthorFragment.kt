@@ -22,6 +22,7 @@ class AuthorFragment() : Fragment() {
     lateinit var binding: FragmentAuthorBinding
     private val userViewModel: UserViewModel by activityViewModels()
 
+
     private val fragmentList = listOf(
         WallFragment(),
         JobFragment()

@@ -62,6 +62,14 @@ class WallRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun removeDb() {
+        try {
+            wallDao.removeAll()
+        } catch (e: IOException) {
+            throw NetworkError
+        }
+    }
+
     override suspend fun likeByIdWall(id: Long) {
         try {
             wallDao.likeById(id, appAuth.getAuthId())

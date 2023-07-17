@@ -11,6 +11,7 @@ import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.dto.Job
 import ru.netology.diplom.model.JobModelState
 import ru.netology.diplom.repositry.job.JobRepository
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +24,8 @@ class JobViewModel @Inject constructor(
         id = appAuth.getAuthId(),
         name = "",
         position = "position",
-        start = "2023-07-10"
+        start = LocalDateTime.now().toString(),
+        finish = LocalDateTime.now().toString()
     )
 
     private val jobCreate = MutableLiveData(empty)

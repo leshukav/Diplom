@@ -20,7 +20,7 @@ class ImageFragment : Fragment() {
 
         arguments?.textArg?.let {
             val uri: Uri = Uri.parse(it)
-            Glide.with(binding.imageFragment)
+            Glide.with(binding.image)
                 .load(uri)
                 .timeout(10_000)
                 .into(binding.image)

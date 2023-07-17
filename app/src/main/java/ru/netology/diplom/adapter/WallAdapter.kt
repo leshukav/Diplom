@@ -22,6 +22,8 @@ import ru.netology.diplom.databinding.WallUserBinding
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.dto.Wall
 import ru.netology.diplom.utils.Count
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class WallAdapter(
     private val onListener: OnClick<Wall>,
@@ -60,8 +62,10 @@ class WallViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(wall: Wall) {
         binding.apply {
-            val split = wall.published.split(".")
-            publish.text = split[0]
+
+            val publishedTime = OffsetDateTime.parse(wall.published).toLocalDateTime()
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy   HH:mm:ss")
+            publish.text = publishedTime.format(formatter)
             content.text = wall.content
             if (wall.attachment == null) {
                 image.visibility = View.GONE

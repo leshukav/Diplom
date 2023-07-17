@@ -12,6 +12,9 @@ import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.CardJobBinding
 import ru.netology.diplom.dto.Job
 import ru.netology.diplom.viewmodel.UserViewModel
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 interface OnClickMenu {
     fun onClick(job: Job)
@@ -40,12 +43,20 @@ class JobViewHolder(
     private val userViewModel: UserViewModel,
     private val onClickMenu: OnClickMenu,
 ) : RecyclerView.ViewHolder(binding.root) {
+    var startJobTime: LocalDateTime = LocalDateTime.now()
+    var endJobTime: LocalDateTime = LocalDateTime.now()
     fun bind(job: Job) {
         binding.apply {
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy   HH:mm:ss")
+            try {
+                 startJobTime = OffsetDateTime.parse(job.start).toLocalDateTime()
+                 endJobTime = OffsetDateTime.parse(job.finish).toLocalDateTime()
+
+            } catch (_: Exception) {}
+            startTime.text = startJobTime.format(formatter)
+            finishTime.text = endJobTime.format(formatter)
             name.text = job.name
             position.text = job.position
-            startTime.text = job.start
-            finishTime.text = job.finish
             menu.isVisible = auth.getAuthId() == userViewModel.user.value?.idUser
             link.text = job.link
             menu.setOnClickListener {

@@ -62,6 +62,18 @@ class WallViewModel @Inject constructor(
         }
     }
 
+    fun removeWallDao() {
+        viewModelScope.launch {
+            try {
+                repository.removeDb()
+                _state.value = WallModelState()
+            } catch (e: Exception) {
+                _state.value = WallModelState(removeError = true)
+            }
+
+        }
+    }
+
     fun likeByIdWall(id: Long) {
         viewModelScope.launch {
             try {

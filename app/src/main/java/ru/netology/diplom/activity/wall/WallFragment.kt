@@ -2,10 +2,8 @@ package ru.netology.diplom.activity.wall
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -22,9 +20,7 @@ import ru.netology.diplom.adapter.OnClick
 import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentWallBinding
 import ru.netology.diplom.dto.Wall
-import ru.netology.diplom.viewmodel.AuthViewModel
-import ru.netology.diplom.viewmodel.PostViewModel
-import ru.netology.diplom.viewmodel.WallViewModel
+import ru.netology.diplom.viewmodel.*
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
@@ -163,6 +159,5 @@ class WallFragment : Fragment() {
 
         return binding.root
     }
-
 
 }

@@ -22,6 +22,8 @@ import ru.netology.diplom.databinding.CardPostBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.dto.TypeAttachment
 import ru.netology.diplom.utils.Count
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class PostAdapter(
     private val onListener: OnClick<Post>,
@@ -46,8 +48,9 @@ class PostViewHolder(
     fun bind(post: Post) {
         binding.apply {
 
-            val split = post.published.split(".")
-            publish.text = split[0]
+            val publishedTime = OffsetDateTime.parse(post.published).toLocalDateTime()
+            val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy   HH:mm:ss")
+            publish.text = publishedTime.format(formatter)
             author.text = post.author
             content.text = post.content
             if (post.authorAvatar != null) {

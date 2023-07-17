@@ -17,4 +17,6 @@ interface WallRepository {
 
     suspend fun unlikeByIdWall(id: Long)
 
+    suspend fun removeDb()
+
 }
