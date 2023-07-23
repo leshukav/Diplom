@@ -23,10 +23,11 @@ import ru.netology.diplom.viewmodel.*
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class MainFragment : Fragment(), MenuProvider {
+class MainFragment() : Fragment(), MenuProvider {
     companion object {
         var Bundle.textArg by StringArgs
         val observer = MediaLifecycleObserver()
+        var playId = -1L
     }
 
     lateinit var binding: FragmentMainBinding
@@ -49,6 +50,7 @@ class MainFragment : Fragment(), MenuProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        lifecycle.addObserver(observer)
         init()
     }
 

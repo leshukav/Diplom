@@ -17,7 +17,7 @@ import ru.netology.diplom.databinding.FragmentLogoutBinding
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LogoutFragment : DialogFragment() {
+class LogoutFragment() : DialogFragment() {
 
     @Inject
     lateinit var appAuth: AppAuth

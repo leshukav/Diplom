@@ -23,7 +23,7 @@ import ru.netology.diplom.viewmodel.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @AndroidEntryPoint
-class UsersFragment : Fragment() {
+class UsersFragment() : Fragment() {
     private lateinit var binding: FragmentUsersBinding
     private lateinit var adapter: UserAdapter
     private val userViewModel: UserViewModel by activityViewModels()

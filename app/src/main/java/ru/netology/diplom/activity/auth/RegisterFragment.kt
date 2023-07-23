@@ -22,7 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.netology.diplom.dto.TypeAttachment
 
 @AndroidEntryPoint
-class RegisterFragment : Fragment() {
+class RegisterFragment() : Fragment() {
 
     val authViewModel: AuthViewModel by activityViewModels()
 

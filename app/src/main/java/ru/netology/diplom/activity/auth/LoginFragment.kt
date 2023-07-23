@@ -10,17 +10,21 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import ru.netology.diplom.R
 import ru.netology.diplom.databinding.FragmentLoginBinding
 import ru.netology.diplom.utils.AndroidUtils
 import ru.netology.diplom.viewmodel.AuthViewModel
+import ru.netology.diplom.viewmodel.PostViewModel
 
 @AndroidEntryPoint
-class LoginFragment : Fragment() {
+class LoginFragment() : Fragment() {
 
     lateinit var binding: FragmentLoginBinding
 
-    val authViewModel: AuthViewModel by activityViewModels()
+    private val viewModelPost: PostViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +50,7 @@ class LoginFragment : Fragment() {
 
         authViewModel.data.observe(viewLifecycleOwner) {
             if (authViewModel.authorized) {
+             //   viewModelPost.loadPosts()
                 findNavController().navigateUp()   //navigate(R.id.fragment_main)
             }
         }

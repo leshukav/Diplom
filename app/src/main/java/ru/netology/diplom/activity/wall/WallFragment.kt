@@ -1,5 +1,6 @@
 package ru.netology.diplom.activity.wall
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -12,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
-import ru.netology.diplom.activity.MainFragment.Companion.observer
+import ru.netology.diplom.activity.MainFragment
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
 import ru.netology.diplom.activity.post.PostFragment
 import ru.netology.diplom.adapter.WallAdapter
@@ -21,22 +22,30 @@ import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentWallBinding
 import ru.netology.diplom.dto.Wall
 import ru.netology.diplom.viewmodel.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class WallFragment : Fragment() {
+class WallFragment() : Fragment() {
+
+    @Inject
+    lateinit var appAuth: AppAuth
     private lateinit var binding: FragmentWallBinding
     private lateinit var adapter: WallAdapter
+    private var playTrack = -1L
     private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
     private val wallViewModel: WallViewModel by activityViewModels()
-    private var playPostId = -1L
+
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+
         binding = FragmentWallBinding.inflate(inflater, container, false)
         adapter = WallAdapter(object : OnClick<Wall> {
+
 
             override fun onRemove(wall: Wall) {
                 wallViewModel.removeWallPostDao(wall.id)
@@ -61,15 +70,15 @@ class WallFragment : Fragment() {
             }
 
             override fun onPlayMusic(wall: Wall, seekBar: SeekBar) {
-                if (!observer.isPaused() || wall.id != playPostId) {
-                    playPostId = wall.id
+                if (wall.id != playTrack) {
+                    playTrack = wall.id
                     val url = wall.attachment?.url
-                    observer.apply {
+                    MainFragment.observer.apply {
                         mediaPlayer?.reset()
                         mediaPlayer?.setDataSource(url)
                     }.onPlay(seekBar)
                 } else {
-                    observer.mediaPlayer?.start()
+                    MainFragment.observer.mediaPlayer?.start()
                 }
             }
 
@@ -81,7 +90,7 @@ class WallFragment : Fragment() {
             }
 
             override fun onPause() {
-                observer.onPause()
+                MainFragment.observer.onPause()
             }
 
             override fun onShare(wall: Wall) {
@@ -117,15 +126,20 @@ class WallFragment : Fragment() {
                         })
                 }
             }
-        }, AppAuth(requireContext()))
+        }, appAuth)
         binding.rcView.layoutManager = LinearLayoutManager(activity)
         binding.rcView.adapter = adapter
+
         wallViewModel.wallData.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
             if (it.isEmpty()) {
                 binding.wallEmpty.isVisible = true
                 binding.wallEmpty.text = getString(R.string.post_not_found)
             }
+            adapter.submitList(it)
+        }
+
+        authViewModel.data.observe(viewLifecycleOwner) {
+            adapter.notifyDataSetChanged()
         }
 
         wallViewModel.state.observe(viewLifecycleOwner) { state ->

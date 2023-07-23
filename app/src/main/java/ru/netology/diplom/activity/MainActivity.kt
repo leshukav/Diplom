@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ru.netology.diplom.R
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity() : AppCompatActivity() {
 
     lateinit var appBarConfiquration: AppBarConfiguration
 

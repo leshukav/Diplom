@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import ru.netology.diplom.activity.MainFragment.Companion.textArg
 import ru.netology.diplom.databinding.FragmentImageBinding
 
-class ImageFragment : Fragment() {
+class ImageFragment() : Fragment() {
     private lateinit var binding: FragmentImageBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

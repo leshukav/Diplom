@@ -16,7 +16,7 @@ import ru.netology.diplom.viewmodel.JobViewModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @AndroidEntryPoint
-class NewJobFragment : Fragment() {
+class NewJobFragment() : Fragment() {
     lateinit var binding: FragmentNewJobBinding
     private val viewModelJob: JobViewModel by activityViewModels()
 

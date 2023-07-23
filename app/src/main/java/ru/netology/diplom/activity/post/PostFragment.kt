@@ -1,5 +1,6 @@
 package ru.netology.diplom.activity.post
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -24,14 +25,14 @@ import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentPostBinding
 import ru.netology.diplom.dto.Post
 import ru.netology.diplom.viewmodel.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class PostFragment : Fragment() {
-
+class PostFragment() : Fragment() {
+    @Inject lateinit var appAuth: AppAuth
     lateinit var binding: FragmentPostBinding
     lateinit var adapter: PostAdapter
-    private var playPostId = -1L
     private val viewModelPost: PostViewModel by activityViewModels()
     private val authViewModel: AuthViewModel by activityViewModels()
     private val viewModelJob: JobViewModel by activityViewModels()
@@ -43,12 +44,13 @@ class PostFragment : Fragment() {
         val SIGN_OUT = "SIGN_OUT"
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPostBinding.inflate(inflater)
-        lifecycle.addObserver(MainFragment.observer)
+    //    lifecycle.addObserver(MainFragment.observer)
         adapter = PostAdapter(object : OnClick<Post> {
             override fun onClik(post: Post) {
                 if (!authViewModel.authorized) {
@@ -86,16 +88,16 @@ class PostFragment : Fragment() {
             }
 
             override fun onPlayMusic(post: Post, seekBar: SeekBar) {
-                if (!MainFragment.observer.isPaused() || post.id != playPostId) {
-                    playPostId = post.id
-                    val url = post.attachment?.url
-                    MainFragment.observer.apply {
-                        mediaPlayer?.reset()
-                        mediaPlayer?.setDataSource(url)
-                    }.onPlay(seekBar)
-                } else {
-                    MainFragment.observer.mediaPlayer?.start()
-                }
+                if (post.id != MainFragment.playId) {
+                    MainFragment.playId = post.id
+                        val url = post.attachment?.url
+                        MainFragment.observer.apply {
+                            mediaPlayer?.reset()
+                            mediaPlayer?.setDataSource(url)
+                        }.onPlay(seekBar)
+                    } else {
+                        MainFragment.observer.mediaPlayer?.start()
+                    }
             }
 
             override fun onPlayVideo(post: Post) {
@@ -140,7 +142,7 @@ class PostFragment : Fragment() {
                 }
             }
 
-        }, AppAuth(requireContext()))
+        }, appAuth)
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -191,6 +193,7 @@ class PostFragment : Fragment() {
 
         authViewModel.state.observe(viewLifecycleOwner) {
             binding.addPost.isVisible = authViewModel.authorized
+            adapter.notifyDataSetChanged()
         }
 
         lifecycleScope.launchWhenCreated {

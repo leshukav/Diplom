@@ -32,7 +32,7 @@ import java.io.File
 
 @AndroidEntryPoint
 @OptIn(ExperimentalCoroutinesApi::class)
-class NewEventFragment : Fragment(), MenuProvider {
+class NewEventFragment() : Fragment(), MenuProvider {
     private lateinit var binding: FragmentNewEventBinding
     private val fileUtils = FileFromContentUri()
     private val pickAudioLauncher = pickMediaLauncher(TypeAttachment.AUDIO)

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class MediaLifecycleObserver : LifecycleEventObserver {
-    var mediaPlayer: MediaPlayer? = MediaPlayer()
+    var mediaPlayer: MediaPlayer?  = MediaPlayer()
     private var currentPos = 0
     private var scope: CoroutineScope? = null
     fun onPlay(seekBar: SeekBar) {

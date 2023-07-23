@@ -1,5 +1,6 @@
 package ru.netology.diplom.activity.event
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -26,26 +27,28 @@ import ru.netology.diplom.auth.AppAuth
 import ru.netology.diplom.databinding.FragmentEventBinding
 import ru.netology.diplom.dto.Event
 import ru.netology.diplom.viewmodel.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class EventFragment : Fragment() {
+class EventFragment() : Fragment() {
 
+    @Inject
+    lateinit var appAuth: AppAuth
     lateinit var binding: FragmentEventBinding
     private lateinit var adapter: EventAdapter
     private val viewModelEvent: EventViewModel by activityViewModels()
-    private var playPostId = -1L
     private val authViewModel: AuthViewModel by activityViewModels()
     private val wallViewModel: WallViewModel by activityViewModels()
     private val viewModelJob: JobViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentEventBinding.inflate(inflater)
-        lifecycle.addObserver(MainFragment.observer)
         adapter = EventAdapter(object : OnClick<Event> {
             override fun onClik(event: Event) {
                 if (!authViewModel.authorized) {
@@ -85,8 +88,8 @@ class EventFragment : Fragment() {
             }
 
             override fun onPlayMusic(event: Event, seekBar: SeekBar) {
-                if (!MainFragment.observer.isPaused() || event.id != playPostId) {
-                    playPostId = event.id
+                if (event.id != MainFragment.playId) {
+                    MainFragment.playId = event.id
                     val url = event.attachment?.url
                     MainFragment.observer.apply {
                         mediaPlayer?.reset()
@@ -139,7 +142,7 @@ class EventFragment : Fragment() {
                 }
             }
 
-        }, AppAuth(requireContext()))
+        }, appAuth)
 
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -207,6 +210,7 @@ class EventFragment : Fragment() {
 
         authViewModel.state.observe(viewLifecycleOwner) {
             binding.addEvent.isVisible = authViewModel.authorized
+            adapter.notifyDataSetChanged()
         }
 
         binding.addEvent.setOnClickListener {
