@@ -23,6 +23,7 @@ class PostViewModel @Inject constructor(
     private val repository: PostRepository,
     private val appAuth: AppAuth,
 ) : ViewModel() {
+
     private val empty = PostCreate(
         id = appAuth.getAuthId(),
         content = "",
